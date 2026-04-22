@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nous trouver – F1 Véhicule Culoz</title>
+  <meta name="description" content="Trouvez F1 Véhicule à Culoz : 110 rue du Boulodrome, 01350 Culoz. Carte, horaires et accès."/>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .accès-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem; margin-bottom: 3rem;
+    }
+    .acces-card {
+      background: var(--mid-grey); border-radius: 8px;
+      padding: 1.8rem 1.5rem; text-align: center;
+      border: 1px solid rgba(255,255,255,.07);
+      border-top: 3px solid var(--red);
+    }
+    .acces-card .ico { font-size: 2rem; margin-bottom: .8rem; }
+    .acces-card h3 { font-size: .95rem; margin-bottom: .5rem; }
+    .acces-card p { color: #aaa; font-size: .88rem; }
+    .horaires-full {
+      background: var(--mid-grey); border-radius: 8px;
+      padding: 2rem; margin-top: 2rem;
+      border: 1px solid rgba(255,255,255,.07);
+    }
+    .horaires-full h3 { margin-bottom: 1.2rem; font-size: 1rem; color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="images/logo.svg" alt="F1 Véhicule logo"/>
+    <span class="brand">F1 <span>Véhicule</span></span>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="presentation.html">À propos</a></li>
+    <li><a href="sav.html">SAV</a></li>
+    <li><a href="rdv.html">RDV &amp; Devis</a></li>
+    <li><a href="contact.html">Nous trouver</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Accueil</a><span>/</span><span>Nous trouver</span>
+    </div>
+    <h1>Nous <span>Trouver</span></h1>
+    <p>F1 Véhicule — 110 rue du Boulodrome, 01350 Culoz</p>
+  </div>
+</div>
+
+<!-- ===== MAP + CONTACT ===== -->
+<section class="contact-section">
+  <div class="container">
+    <h2 class="section-title">Notre <span>Localisation</span></h2>
+    <div class="divider"></div>
+    <p class="section-subtitle">Au cœur de Culoz, facilement accessible</p>
+
+    <div class="contact-grid">
+      <!-- Infos -->
+      <div class="contact-info">
+        <h3>Coordonnées</h3>
+
+        <div class="contact-detail">
+          <span class="icon">📍</span>
+          <div>
+            <strong>Adresse</strong>
+            110 rue du Boulodrome<br/>
+            01350 Culoz<br/>
+            <em style="font-size:.82rem;color:#666;">(Ain, Auvergne-Rhône-Alpes)</em>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <span class="icon">📞</span>
+          <div>
+            <strong>Téléphone</strong>
+            04 XX XX XX XX
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <span class="icon">✉️</span>
+          <div>
+            <strong>Email</strong>
+            contact@f1vehicule.fr
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <span class="icon">🅿️</span>
+          <div>
+            <strong>Stationnement</strong>
+            Parking gratuit directement devant l'atelier. Dépose rapide possible.
+          </div>
+        </div>
+
+        <!-- Horaires -->
+        <div class="horaires-full">
+          <h3>🕐 Horaires d'ouverture</h3>
+          <div class="horaire-row"><span>Lundi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Mardi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Mercredi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Jeudi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Vendredi</span><span>08h00 – 12h00 / 13h30 – 18h00</span></div>
+          <div class="horaire-row"><span>Samedi</span><span>08h30 – 12h00</span></div>
+          <div class="horaire-row closed"><span>Dimanche</span><span>Fermé</span></div>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <a href="rdv.html" class="btn btn-primary">Prendre rendez-vous</a>
+        </div>
+      </div>
+
+      <!-- Carte OpenStreetMap -->
+      <div class="map-placeholder">
+        <div class="map-overlay-label">📍 F1 Véhicule – Culoz</div>
+        <iframe
+          title="Carte F1 Véhicule Culoz"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=5.7600%2C45.8350%2C5.7900%2C45.8550&layer=mapnik&marker=45.8450%2C5.7750"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ACCÈS ===== -->
+<section style="background:var(--black);padding:80px 2rem;">
+  <div class="container">
+    <h2 class="section-title">Comment <span>Venir</span> ?</h2>
+    <div class="divider"></div>
+    <p class="section-subtitle">Culoz, au carrefour du Haut-Bugey</p>
+    <div class="accès-grid">
+      <div class="acces-card">
+        <div class="ico">🚗</div>
+        <h3>En voiture</h3>
+        <p>Depuis Bellegarde-sur-Valserine (N 508), ou depuis Bourg-en-Bresse via la D 904. Stationnement gratuit sur place.</p>
+      </div>
+      <div class="acces-card">
+        <div class="ico">🚂</div>
+        <h3>En train</h3>
+        <p>Gare de Culoz à 5 minutes à pied. Ligne Genève – Lyon (TER / Intercités) avec arrêt à Culoz.</p>
+      </div>
+      <div class="acces-card">
+        <div class="ico">🚌</div>
+        <h3>En bus</h3>
+        <p>Lignes du réseau Cars de l'Ain desservant Culoz depuis les communes voisines (Belley, Bellegarde).</p>
+      </div>
+      <div class="acces-card">
+        <div class="ico">🚲</div>
+        <h3>À vélo</h3>
+        <p>Culoz est accessible via la Voie Verte du Haut-Bugey et les pistes cyclables locales.</p>
+      </div>
+    </div>
+
+    <!-- Bloc directions textuelles -->
+    <div style="background:var(--dark-grey);border-radius:10px;padding:2rem 2.5rem;border:1px solid rgba(255,255,255,.07);">
+      <h3 style="margin-bottom:1.2rem;font-size:1.1rem;">📌 Repères pour se repérer</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <p style="color:#bbb;font-size:.9rem;margin-bottom:.4rem;">
+            <strong style="color:var(--white);">Depuis Bellegarde-sur-Valserine</strong><br/>
+            Prendre la D 904 direction Culoz / Belley. À Culoz, suivre le centre-bourg puis la rue du Boulodrome.
+          </p>
+        </div>
+        <div>
+          <p style="color:#bbb;font-size:.9rem;margin-bottom:.4rem;">
+            <strong style="color:var(--white);">Depuis Belley</strong><br/>
+            Suivre la D 992 direction Culoz / Bellegarde. Dans Culoz, longer le boulodrome communal — le garage est au n° 110.
+          </p>
+        </div>
+        <div>
+          <p style="color:#bbb;font-size:.9rem;">
+            <strong style="color:var(--white);">Depuis Bourg-en-Bresse</strong><br/>
+            A40 sortie Ambérieu-en-Bugey, puis D 904 vers Belley et Culoz.
+          </p>
+        </div>
+        <div>
+          <p style="color:#bbb;font-size:.9rem;">
+            <strong style="color:var(--white);">Depuis Annecy / Genève</strong><br/>
+            A41 ou A40 jusqu'à Bellegarde, puis D 904 / N 508 direction Culoz.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ZONE INTERVENTION ===== -->
+<section class="services-section">
+  <div class="container">
+    <h2 class="section-title">Zone <span>d'intervention</span></h2>
+    <div class="divider"></div>
+    <p class="section-subtitle">Nous accueillons des clients de tout le Haut-Bugey et au-delà</p>
+    <div style="display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-bottom:2.5rem;">
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Culoz</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Belley</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Bellegarde-sur-Valserine</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Seyssel</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Chanay</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Vieu-d'Izenave</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Brens</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Anglefort</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(225,6,0,.3);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;">Artemare</span>
+      <span style="background:var(--mid-grey);border:1px solid rgba(255,255,255,.1);padding:.4rem 1rem;border-radius:20px;font-size:.88rem;color:#666;">et alentours…</span>
+    </div>
+    <div style="text-align:center;">
+      <a href="rdv.html" class="btn btn-primary">Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo.svg" alt="logo"/>
+        <span class="brand">F1 <span>Véhicule</span></span>
+      </a>
+      <p>Votre garage de confiance à Culoz, alliant passion automobile et expertise technique depuis 15 ans.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="presentation.html">À propos</a></li>
+        <li><a href="sav.html">SAV</a></li>
+        <li><a href="rdv.html">RDV &amp; Devis</a></li>
+        <li><a href="contact.html">Nous trouver</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <address>
+        110 rue du Boulodrome<br/>
+        01350 Culoz<br/><br/>
+        📞 04 XX XX XX XX<br/>
+        ✉ contact@f1vehicule.fr
+      </address>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 F1 Véhicule — Tous droits réservés</span>
+    <span>110 rue du Boulodrome, 01350 Culoz</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

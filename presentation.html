@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>À propos – F1 Véhicule Culoz</title>
+  <meta name="description" content="Découvrez l'histoire et les valeurs de F1 Véhicule, garage automobile indépendant à Culoz dans l'Ain."/>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .timeline { position: relative; max-width: 760px; margin: 0 auto; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 2px; background: var(--red); transform: translateX(-50%);
+    }
+    .tl-item {
+      display: flex; gap: 2rem; align-items: flex-start;
+      margin-bottom: 3rem; position: relative;
+    }
+    .tl-item:nth-child(odd) { flex-direction: row-reverse; }
+    .tl-content {
+      flex: 1; background: var(--mid-grey);
+      border-radius: 8px; padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,.07);
+      border-top: 3px solid var(--red);
+    }
+    .tl-content h3 { margin-bottom: .5rem; font-size: 1rem; color: var(--white); }
+    .tl-content p  { color: #aaa; font-size: .9rem; }
+    .tl-year {
+      flex: 0 0 60px; text-align: center;
+      padding-top: .6rem;
+    }
+    .tl-year span {
+      display: inline-block;
+      background: var(--red);
+      color: var(--white);
+      font-weight: 800; font-size: .85rem;
+      padding: .3rem .6rem; border-radius: 4px;
+    }
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem; margin-top: 1rem;
+    }
+    .value-card {
+      background: var(--mid-grey);
+      border-radius: 8px; padding: 2rem 1.5rem;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.07);
+      border-bottom: 3px solid var(--red);
+      transition: transform .25s;
+    }
+    .value-card:hover { transform: translateY(-5px); }
+    .value-card .ico { font-size: 2.5rem; margin-bottom: .8rem; }
+    .value-card h3 { margin-bottom: .5rem; font-size: 1rem; }
+    .value-card p { color: #aaa; font-size: .88rem; }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    .team-card {
+      background: var(--mid-grey); border-radius: 8px;
+      padding: 2rem 1rem; text-align: center;
+      border: 1px solid rgba(255,255,255,.07);
+    }
+    .team-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), var(--dark-red));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 1rem;
+    }
+    .team-card h3 { font-size: 1rem; margin-bottom: .3rem; }
+    .team-card span { color: var(--red); font-size: .85rem; font-weight: 600; }
+    .team-card p { color: #aaa; font-size: .85rem; margin-top: .5rem; }
+    @media (max-width: 640px) {
+      .timeline::before { left: 20px; }
+      .tl-item, .tl-item:nth-child(odd) { flex-direction: column; padding-left: 50px; }
+      .tl-year { position: absolute; left: 0; top: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="images/logo.svg" alt="F1 Véhicule logo"/>
+    <span class="brand">F1 <span>Véhicule</span></span>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="presentation.html">À propos</a></li>
+    <li><a href="sav.html">SAV</a></li>
+    <li><a href="rdv.html">RDV &amp; Devis</a></li>
+    <li><a href="contact.html">Nous trouver</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Accueil</a><span>/</span><span>À propos</span>
+    </div>
+    <h1>Notre <span>Histoire</span></h1>
+    <p>Passion, expertise et service — les piliers de F1 Véhicule depuis 15 ans</p>
+  </div>
+</div>
+
+<!-- ===== INTRO ===== -->
+<section class="about-section" style="padding-bottom:0;">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual">
+        <div class="about-logo-wrap">
+          <img src="images/logo.svg" alt="F1 Véhicule"/>
+        </div>
+        <div class="about-badge">15<small>ans</small></div>
+      </div>
+      <div class="about-text">
+        <h2 class="section-title" style="text-align:left;">Qui sommes-<span>nous</span> ?</h2>
+        <div class="divider" style="margin:0.6rem 0 1.2rem;"></div>
+        <p>F1 Véhicule est un garage automobile indépendant situé au cœur de Culoz, dans l'Ain. Fondé avec la conviction que chaque véhicule mérite un soin irréprochable, notre atelier est équipé des derniers outils de diagnostic et animé par des mécaniciens passionnés.</p>
+        <p>Notre nom rend hommage à la Formule 1, symbole de précision, de performance et de dépassement de soi. Ces valeurs guident chacune de nos interventions, qu'il s'agisse d'une simple vidange ou d'une réparation complexe.</p>
+        <p>Garage toutes marques, nous prenons en charge les véhicules essence, diesel et hybrides avec la même exigence et la même transparence.</p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
+          <a href="services.html" class="btn btn-primary">Nos services</a>
+          <a href="rdv.html" class="btn btn-outline">Prendre RDV</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VALEURS ===== -->
+<section style="background:var(--black);padding:80px 2rem;">
+  <div class="container">
+    <h2 class="section-title">Nos <span>Valeurs</span></h2>
+    <div class="divider"></div>
+    <p class="section-subtitle">Ce qui nous guide au quotidien</p>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="ico">🏆</div>
+        <h3>Excellence</h3>
+        <p>Chaque intervention est réalisée avec le même soin, des pièces de qualité et un contrôle qualité systématique.</p>
+      </div>
+      <div class="value-card">
+        <div class="ico">🤝</div>
+        <h3>Transparence</h3>
+        <p>Devis détaillé avant intervention, aucune mauvaise surprise : vous savez exactement ce que vous payez.</p>
+      </div>
+      <div class="value-card">
+        <div class="ico">⚡</div>
+        <h3>Réactivité</h3>
+        <p>Prise en charge rapide, délais maîtrisés et communication proactive sur l'avancement de votre véhicule.</p>
+      </div>
+      <div class="value-card">
+        <div class="ico">🌿</div>
+        <h3>Responsabilité</h3>
+        <p>Gestion écologique des huiles usagées, pneus et pièces — nous respectons notre environnement local.</p>
+      </div>
+      <div class="value-card">
+        <div class="ico">📍</div>
+        <h3>Proximité</h3>
+        <p>Garage ancré dans le territoire de Culoz et du Haut-Bugey, nous connaissons nos clients et ils nous font confiance.</p>
+      </div>
+      <div class="value-card">
+        <div class="ico">🔐</div>
+        <h3>Garantie</h3>
+        <p>Toutes nos interventions bénéficient d'une garantie pièces &amp; main d'œuvre pour votre tranquillité d'esprit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TIMELINE ===== -->
+<section class="services-section">
+  <div class="container">
+    <h2 class="section-title">Notre <span>Parcours</span></h2>
+    <div class="divider"></div>
+    <p class="section-subtitle">Les grandes étapes de F1 Véhicule</p>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year"><span>2010</span></div>
+        <div class="tl-content">
+          <h3>Création du garage</h3>
+          <p>Ouverture de F1 Véhicule à Culoz avec un premier atelier et une équipe de deux mécaniciens passionnés.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year"><span>2013</span></div>
+        <div class="tl-content">
+          <h3>Agrandissement de l'atelier</h3>
+          <p>Doublement de la surface, acquisition d'un pont supplémentaire et d'un équipement de diagnostic multimarques.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year"><span>2016</span></div>
+        <div class="tl-content">
+          <h3>Certification pneumatiques</h3>
+          <p>Lancement du service pneumatiques complet : vente, montage, géométrie et équilibrage.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year"><span>2019</span></div>
+        <div class="tl-content">
+          <h3>Service climatisation agréé</h3>
+          <p>Obtention de l'agrément fluide frigorigène et ouverture du pôle climatisation automobile.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year"><span>2022</span></div>
+        <div class="tl-content">
+          <h3>Passage au véhicule hybride</h3>
+          <p>Formation de l'équipe aux spécificités des motorisations hybrides et électriques (habilitation électrique).</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year"><span>2025</span></div>
+        <div class="tl-content">
+          <h3>Aujourd'hui</h3>
+          <p>Plus de 2 400 clients fidèles, une équipe de 4 professionnels et toujours la même passion au service de votre véhicule.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ÉQUIPE ===== -->
+<section style="background:var(--black);padding:80px 2rem;">
+  <div class="container">
+    <h2 class="section-title">Notre <span>Équipe</span></h2>
+    <div class="divider"></div>
+    <p class="section-subtitle">Des professionnels à votre service</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">👨‍🔧</div>
+        <h3>Le Gérant</h3>
+        <span>Gérant &amp; Mécanicien Expert</span>
+        <p>15 ans d'expérience, spécialiste moteur et électronique embarquée.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">🧑‍🔧</div>
+        <h3>Mécanicien Senior</h3>
+        <span>Technicien polyvalent</span>
+        <p>Expert freinage, suspension et transmission. 10 ans d'expérience atelier.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">👨‍🔧</div>
+        <h3>Technicien Élec</h3>
+        <span>Électricien auto &amp; diag</span>
+        <p>Spécialiste diagnostic électronique et habilité véhicule hybride/électrique.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">🧑‍💼</div>
+        <h3>Accueil &amp; Devis</h3>
+        <span>Conseillère clientèle</span>
+        <p>Votre interlocutrice pour les devis, rendez-vous et le suivi de vos interventions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo.svg" alt="logo"/>
+        <span class="brand">F1 <span>Véhicule</span></span>
+      </a>
+      <p>Votre garage de confiance à Culoz, alliant passion automobile et expertise technique depuis 15 ans.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="presentation.html">À propos</a></li>
+        <li><a href="sav.html">SAV</a></li>
+        <li><a href="rdv.html">RDV &amp; Devis</a></li>
+        <li><a href="contact.html">Nous trouver</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <address>
+        110 rue du Boulodrome<br/>
+        01350 Culoz<br/><br/>
+        📞 04 XX XX XX XX<br/>
+        ✉ contact@f1vehicule.fr
+      </address>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 F1 Véhicule — Tous droits réservés</span>
+    <span>110 rue du Boulodrome, 01350 Culoz</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
