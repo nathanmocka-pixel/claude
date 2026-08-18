@@ -1,8 +1,8 @@
 # Nathan Mocka — CRM de prospection
 
-CRM minimaliste pour suivre la prospection LinkedIn de Nathan Mocka : liste de prospects, fiche client avec historique, vue « à relancer », tableau de bord, génération de messages via l'API Claude à partir d'un pain point.
+CRM minimaliste pour suivre la prospection LinkedIn de Nathan Mocka : liste de prospects, fiche client avec historique, vue « à relancer », tableau de bord, et prompt Claude prêt à copier pour rédiger un message à partir d'un pain point.
 
-Stack : Next.js 15 (App Router, Server Components + Server Actions), Supabase (Auth + Postgres avec RLS), Tailwind CSS, Anthropic SDK côté serveur, déploiement Vercel.
+Stack : Next.js 15 (App Router, Server Components + Server Actions), Supabase (Auth + Postgres avec RLS), Tailwind CSS, déploiement Vercel. Aucun coût d'API Claude côté serveur — le CRM copie le prompt dans le presse-papier et vous le collez dans votre Claude.ai.
 
 ## Ce que fait l'app
 
@@ -10,7 +10,7 @@ Stack : Next.js 15 (App Router, Server Components + Server Actions), Supabase (A
 - **Fiche prospect** éditable en direct (statut, priorité, pain point, note…) avec compteur de jours depuis le dernier contact et badge rouge dès 5 jours pour les prospects en statut *contacté*
 - **Vue « à relancer »** qui affiche uniquement les prospects contactés depuis 5 jours ou plus
 - **Tableau de bord** : total, contactés, taux RDV/close, répartition par statut et par secteur
-- **Génération de message** LinkedIn via Claude, à partir du pain point détecté, en respectant les règles de ton du prompt de prospection (vouvoiement, trois phrases, pas d'appel, question ouverte…). Le brouillon est éditable et n'est jamais envoyé automatiquement
+- **Prompt Claude prêt à copier** — bouton qui met dans le presse-papier le prompt système complet (règles de ton du prompt de prospection : vouvoiement, trois phrases, pas d'appel, question ouverte…) + le contexte du prospect. Vous le collez dans votre Claude.ai, vous copiez la réponse dans le CRM. Aucune clé d'API à gérer, aucun coût
 - **Gestion des comptes** (admin uniquement) : l'admin crée les comptes des autres utilisateurs, chaque compte ne voit que ses propres prospects
 - **Auth Supabase** email/mot de passe, aucune inscription publique
 
@@ -29,9 +29,9 @@ src/
       prospects/[id]/   fiche prospect
       comptes/          gestion des comptes (admin)
       actions.ts        server actions CRUD sur prospects
-    api/generate-message/  route serveur → API Claude
   lib/
     domain.ts           types + constantes métier (statuts, priorités…)
+    prompt.ts           system prompt + builder du prompt à copier
     supabase/           clients browser / server / admin (service role)
   middleware.ts         garde d'auth sur /app
 supabase/
@@ -81,14 +81,13 @@ Ouvrir http://localhost:3000, vous serez redirigé vers `/login`.
 ### 5. Déployer sur Vercel
 
 1. `vercel` ou import du repo depuis vercel.com
-2. Renseigner les 4 variables d'environnement (mêmes noms que `.env.example`)
+2. Renseigner les 3 variables d'environnement (mêmes noms que `.env.example`)
 3. Deploy — l'URL finale est fournie par Vercel
 
 ## Sécurité
 
 - **RLS activée** sur toutes les tables. Un compte ne peut lire / écrire que ses propres prospects et son propre historique. C'est appliqué au niveau Postgres, pas seulement dans le code.
 - **Clé `service_role`** utilisée uniquement dans les server actions/routes serveur qui ont d'abord vérifié `role = 'admin'` du caller. Ne jamais importer `lib/supabase/admin.ts` depuis un composant client.
-- **Clé Anthropic** utilisée uniquement dans `app/api/generate-message/route.ts` côté serveur. Le navigateur ne la voit jamais.
 - **Aucune inscription publique**. La création de comptes passe forcément par l'écran admin.
 
 ## Choix techniques notables
@@ -102,4 +101,4 @@ Ouvrir http://localhost:3000, vous serez redirigé vers `/login`.
 - Pas de pagination sur la liste des prospects (OK jusqu'à ~1000)
 - Pas d'édition de rôle depuis l'UI (seule la création avec le rôle initial est proposée ; passer par Supabase pour bump/rétrograder)
 - Pas de suppression d'un compte depuis l'UI (à faire dans Supabase Auth si besoin — la ligne `profiles` et les prospects cascadent)
-- Modèle Claude par défaut : `claude-sonnet-4-5`, ajustable via `ANTHROPIC_MODEL`
+- La génération de message passe par le presse-papier (le CRM copie le prompt, vous le collez dans Claude.ai). Aucun appel d'API Claude n'est fait depuis le CRM lui-même, donc pas de coût récurrent

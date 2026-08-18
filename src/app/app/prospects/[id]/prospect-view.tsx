@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ChevronLeft, ExternalLink, Sparkles, Trash2 } from "lucide-react";
+import { ChevronLeft, ClipboardCopy, ExternalLink, Trash2 } from "lucide-react";
 import {
   PRIORITES,
   SECTEURS,
@@ -13,6 +13,7 @@ import {
   type Prospect,
   type Statut,
 } from "@/lib/domain";
+import { buildPromptForCopy } from "@/lib/prompt";
 import { JoursBadge } from "../../_components/badges";
 import {
   addHistorique,
@@ -42,8 +43,8 @@ export function ProspectView({
 }) {
   const [local, setLocal] = useState(prospect);
   const [draft, setDraft] = useState("");
-  const [generating, setGenerating] = useState(false);
-  const [genError, setGenError] = useState<string | null>(null);
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const [copyError, setCopyError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   function save<K extends keyof Prospect>(patch: Partial<Pick<Prospect, K>>) {
@@ -55,31 +56,28 @@ export function ProspectView({
     });
   }
 
-  async function genererMessage() {
+  async function copierPrompt() {
     if (!local.pain_point) {
-      setGenError("Renseignez d'abord le pain point détecté.");
+      setCopyState("error");
+      setCopyError("Renseignez d'abord le pain point détecté.");
       return;
     }
-    setGenerating(true);
-    setGenError(null);
+    setCopyError(null);
+    const prompt = buildPromptForCopy({
+      prenom: local.nom.split(" ")[0],
+      entreprise: local.entreprise,
+      secteur: local.secteur ?? "",
+      painPoint: local.pain_point,
+    });
     try {
-      const r = await fetch("/api/generate-message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prenom: local.nom.split(" ")[0],
-          entreprise: local.entreprise,
-          secteur: local.secteur ?? "non précisé",
-          painPoint: local.pain_point,
-        }),
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error ?? "Erreur de génération");
-      setDraft(data.message ?? "");
-    } catch (e) {
-      setGenError(e instanceof Error ? e.message : "Erreur de génération");
-    } finally {
-      setGenerating(false);
+      await navigator.clipboard.writeText(prompt);
+      setCopyState("copied");
+      setTimeout(() => setCopyState("idle"), 2500);
+    } catch {
+      setCopyState("error");
+      setCopyError(
+        "Impossible d'accéder au presse-papier. Copiez le prompt manuellement depuis la zone ci-dessous."
+      );
     }
   }
 
@@ -247,39 +245,48 @@ export function ProspectView({
 
       <div className="bg-white border border-border rounded-xl p-4 mb-5">
         <div className="flex items-center justify-between mb-2">
-          <div className="font-display font-bold text-sm">Générer un message</div>
-          <button
-            onClick={genererMessage}
-            disabled={generating}
-            className="flex items-center gap-1.5 text-xs font-semibold bg-navy text-white px-3 py-1.5 rounded-full disabled:opacity-50"
-          >
-            <Sparkles size={13} /> {generating ? "Génération…" : "Générer"}
-          </button>
-        </div>
-        {genError && (
-          <div className="text-xs text-[#B0392B] bg-[#FBE9E7] rounded-lg px-3 py-2 mb-2">
-            {genError}
-          </div>
-        )}
-        {draft ? (
-          <div className="space-y-2">
-            <textarea
-              className={inputCls}
-              rows={5}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-            />
-            <button
-              onClick={marquerEnvoye}
+          <div className="font-display font-bold text-sm">Rédiger un message</div>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://claude.ai/new"
+              target="_blank"
+              rel="noreferrer"
               className="text-xs font-semibold text-navy underline"
             >
-              Marquer comme envoyé (ajoute à l&apos;historique)
+              Ouvrir Claude.ai
+            </a>
+            <button
+              onClick={copierPrompt}
+              className="flex items-center gap-1.5 text-xs font-semibold bg-navy text-white px-3 py-1.5 rounded-full"
+            >
+              <ClipboardCopy size={13} />
+              {copyState === "copied" ? "Prompt copié" : "Copier le prompt"}
             </button>
           </div>
-        ) : (
-          <div className="text-xs text-[#B4B7BD]">
-            Brouillon à valider manuellement. Jamais envoyé automatiquement.
+        </div>
+        <p className="text-xs text-[#8A8F98] mb-2">
+          Cliquez pour copier le prompt complet (règles de ton + contexte du prospect), collez-le
+          dans Claude.ai, puis collez sa réponse dans la zone ci-dessous.
+        </p>
+        {copyError && (
+          <div className="text-xs text-[#B0392B] bg-[#FBE9E7] rounded-lg px-3 py-2 mb-2">
+            {copyError}
           </div>
+        )}
+        <textarea
+          className={inputCls}
+          rows={5}
+          placeholder="Collez ici le message renvoyé par Claude, ou rédigez-le à la main…"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+        />
+        {draft.trim() && (
+          <button
+            onClick={marquerEnvoye}
+            className="mt-2 text-xs font-semibold text-navy underline"
+          >
+            Marquer comme envoyé (ajoute à l&apos;historique)
+          </button>
         )}
       </div>
 
