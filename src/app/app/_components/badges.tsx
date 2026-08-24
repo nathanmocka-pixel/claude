@@ -34,7 +34,7 @@ export function JoursBadge({
 }) {
   const j = joursDepuis(dateContact);
   if (j === null) return <span className="text-[#B4B7BD] text-xs">—</span>;
-  const urgent = statut === "contacte" && j >= SEUIL_RELANCE;
+  const urgent = statut === "nrp" || (statut === "contacte" && j >= SEUIL_RELANCE);
   return (
     <span
       className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${

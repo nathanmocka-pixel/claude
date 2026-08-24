@@ -20,8 +20,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { count: aRelancerCount } = await supabase
     .from("prospects")
     .select("id", { count: "exact", head: true })
-    .eq("statut", "contacte")
-    .lte("date_contact", isoSeuil);
+    .or(`statut.eq.nrp,and(statut.eq.contacte,date_contact.lte.${isoSeuil})`);
 
   return (
     <div className="min-h-screen bg-cream text-navy">

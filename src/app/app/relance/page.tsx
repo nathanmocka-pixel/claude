@@ -9,9 +9,8 @@ export default async function RelancePage() {
   const { data } = await supabase
     .from("prospects")
     .select("*")
-    .eq("statut", "contacte")
-    .lte("date_contact", seuilIso)
-    .order("date_contact", { ascending: true });
+    .or(`statut.eq.nrp,and(statut.eq.contacte,date_contact.lte.${seuilIso})`)
+    .order("date_contact", { ascending: true, nullsFirst: false });
   const prospects = (data ?? []) as Prospect[];
 
   if (prospects.length === 0) {
@@ -28,7 +27,8 @@ export default async function RelancePage() {
   return (
     <div className="space-y-2">
       <p className="text-sm text-[#8A8F98] mb-3">
-        Prospects contactés il y a {SEUIL_RELANCE} jours ou plus, sans nouvelle relance.
+        Prospects contactés il y a {SEUIL_RELANCE} jours ou plus sans nouvelle relance, et tous
+        les prospects en statut NRP.
       </p>
       {prospects.map((p) => (
         <Link
