@@ -46,6 +46,7 @@ supabase/
   migrations/0001_init.sql       schéma + RLS + trigger profil
   migrations/0002_prompts_signaux.sql  prompts par compte, signaux, suivi des réponses
   migrations/0003_fix_profiles_rls_recursion.sql  policy profiles non récursive
+  migrations/0004_equipe_partagee.sql   base de prospects partagée par équipe
 ```
 
 ## Setup
@@ -53,7 +54,7 @@ supabase/
 ### 1. Créer le projet Supabase
 
 - https://supabase.com → New project, région Europe recommandée
-- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, puis `0002_prompts_signaux.sql`, puis `0003_fix_profiles_rls_recursion.sql`
+- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, `0002_prompts_signaux.sql`, `0003_fix_profiles_rls_recursion.sql`, `0004_equipe_partagee.sql`
 - Récupérer dans **Project Settings → API** :
   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
   - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -96,7 +97,8 @@ Ouvrir http://localhost:3000, vous serez redirigé vers `/login`.
 
 ## Sécurité
 
-- **RLS activée** sur toutes les tables. Un compte ne peut lire / écrire que ses propres prospects et son propre historique. C'est appliqué au niveau Postgres, pas seulement dans le code.
+- **RLS activée** sur toutes les tables. Les prospects et leur historique sont partagés au sein d'une **équipe** : tous les comptes d'une même équipe voient et modifient la même base, et ne voient rien des autres équipes. C'est appliqué au niveau Postgres, pas seulement dans le code. `owner_id` est conservé comme attribution — qui a ajouté le prospect, qui lui a écrit — et l'interface affiche « suivi par » sur les fiches des autres membres, pour éviter de contacter deux fois la même personne.
+- **Les prompts restent strictement par compte.** Le contexte de marque de chacun n'est jamais partagé, même au sein d'une équipe.
 - **Clé `service_role`** utilisée uniquement dans les server actions/routes serveur qui ont d'abord vérifié `role = 'admin'` du caller. Ne jamais importer `lib/supabase/admin.ts` depuis un composant client.
 - **Aucune inscription publique**. La création de comptes passe forcément par l'écran admin.
 

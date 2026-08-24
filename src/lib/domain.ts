@@ -70,9 +70,26 @@ export type Prospect = {
   signal: string | null;
   signal_date: string | null;
   a_repondu: boolean;
+  equipe_id: string | null;
   created_at: string;
   updated_at: string;
 };
+
+export type Membre = { id: string; email: string };
+
+// "prenom.nom@domaine.fr" donne "prenom.nom", suffisant pour distinguer
+// deux membres d'une même équipe sans afficher l'adresse entière.
+export function nomCourt(email: string) {
+  return email.split("@")[0];
+}
+
+export function initiales(email: string) {
+  const base = nomCourt(email).replace(/[._-]+/g, " ").trim();
+  const mots = base.split(/\s+/).filter(Boolean);
+  if (mots.length === 0) return "?";
+  if (mots.length === 1) return mots[0].slice(0, 2).toUpperCase();
+  return (mots[0][0] + mots[1][0]).toUpperCase();
+}
 
 export type MessageHist = {
   id: string;

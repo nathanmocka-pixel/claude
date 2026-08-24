@@ -8,7 +8,9 @@ import {
   SECTEURS,
   SIGNAUX,
   STATUTS,
+  nomCourt,
   statutMeta,
+  type Membre,
   type MessageHist,
   type Priorite,
   type Prospect,
@@ -40,11 +42,18 @@ export function ProspectView({
   prospect,
   historique,
   prompts,
+  membres,
+  currentUserId,
 }: {
   prospect: Prospect;
   historique: MessageHist[];
   prompts: PromptSet;
+  membres: Membre[];
+  currentUserId: string;
 }) {
+  const membreParId = new Map(membres.map((m) => [m.id, m]));
+  const proprietaire = membreParId.get(prospect.owner_id);
+  const suiviParAutre = prospect.owner_id !== currentUserId && proprietaire;
   const [local, setLocal] = useState(prospect);
   const [draft, setDraft] = useState("");
   const [consigne, setConsigne] = useState("");
@@ -97,6 +106,14 @@ export function ProspectView({
           <Trash2 size={16} />
         </button>
       </div>
+
+      {suiviParAutre && (
+        <div className="text-xs bg-[#FFF6E5] text-[#8A6410] border border-[#F0DFB8] rounded-lg px-3 py-2 mb-4">
+          Ce prospect est suivi par{" "}
+          <span className="font-semibold">{nomCourt(proprietaire.email)}</span>. Vous pouvez le
+          modifier, mais vérifiez son historique avant de lui écrire.
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2 mb-5">
         <select
@@ -342,6 +359,9 @@ export function ProspectView({
               <div key={h.id} className="bg-white border border-border rounded-lg p-3">
                 <div className="text-[11px] text-[#8A8F98] font-semibold mb-1">
                   {h.date} · {h.canal}
+                  {membreParId.has(h.owner_id) && h.owner_id !== currentUserId
+                    ? ` · ${nomCourt(membreParId.get(h.owner_id)!.email)}`
+                    : ""}
                 </div>
                 <div className="text-sm text-[#2E3440] whitespace-pre-wrap">{h.contenu}</div>
               </div>
