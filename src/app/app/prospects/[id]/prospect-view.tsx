@@ -16,7 +16,7 @@ import {
 } from "@/lib/domain";
 import { buildMessagePrompt, buildRelancePrompt, type PromptSet } from "@/lib/prompt";
 import { JoursBadge } from "../../_components/badges";
-import { ClaudeLink, CopyPromptButton } from "../../_components/copy-prompt-button";
+import { ClaudeLink, CopyPromptButton, Etape } from "../../_components/copy-prompt-button";
 import {
   addHistorique,
   deleteProspect,
@@ -251,53 +251,74 @@ export function ProspectView({
         </Field>
       </div>
 
-      <div className="bg-white border border-border rounded-xl p-4 mb-5">
-        <div className="font-display font-bold text-sm mb-2">Rédiger un message</div>
-        <p className="text-xs text-[#8A8F98] mb-3">
-          Le prompt reprend vos règles, l&apos;angle du secteur et la fiche du prospect. Collez-le
-          dans Claude.ai, puis rapatriez la réponse ci-dessous.
-        </p>
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <CopyPromptButton
-            label="Prompt message"
-            onError={setPromptError}
-            build={() =>
-              local.pain_point
-                ? { prompt: buildMessagePrompt(prompts, local) }
-                : { error: "Renseignez d'abord le pain point détecté." }
-            }
-          />
-          <CopyPromptButton
-            label="Prompt relance"
-            variant="ghost"
-            onError={setPromptError}
-            build={() =>
-              dejaContacte
-                ? { prompt: buildRelancePrompt(prompts, local, historique) }
-                : { error: "Aucun message dans l'historique : commencez par le premier message." }
-            }
-          />
-          <ClaudeLink />
+      <div className="bg-white border border-border rounded-xl p-4 mb-5 space-y-4">
+        <div>
+          <div className="font-display font-bold text-sm">Rédiger un message</div>
+          <p className="text-xs text-[#8A8F98]">
+            {dejaContacte
+              ? "Ce prospect a déjà été contacté, la relance est l'étape logique."
+              : "Premier contact avec ce prospect."}
+          </p>
         </div>
-        {promptError && (
-          <div className="text-xs text-[#B0392B] bg-[#FBE9E7] rounded-lg px-3 py-2 mb-2">
-            {promptError}
+
+        <Etape numero={1} titre="Copier le prompt">
+          <div className="flex flex-wrap items-center gap-2">
+            <CopyPromptButton
+              label="Premier message"
+              variant={dejaContacte ? "ghost" : "primary"}
+              disabled={!local.pain_point}
+              onError={setPromptError}
+              build={() => ({ prompt: buildMessagePrompt(prompts, local) })}
+            />
+            <CopyPromptButton
+              label="Relance"
+              variant={dejaContacte ? "primary" : "ghost"}
+              disabled={!dejaContacte}
+              onError={setPromptError}
+              build={() => ({ prompt: buildRelancePrompt(prompts, local, historique) })}
+            />
           </div>
-        )}
-        <textarea
-          className={inputCls}
-          rows={5}
-          placeholder="Collez ici le message renvoyé par Claude, ou rédigez-le à la main…"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-        />
-        {draft.trim() && (
+          <p className="text-xs text-[#8A8F98] mt-2">
+            {!local.pain_point
+              ? "Renseignez le pain point détecté plus haut pour activer le premier message."
+              : !dejaContacte
+                ? "La relance s'activera une fois un premier message enregistré à l'étape 3."
+                : "La relance reprend les messages déjà envoyés pour ne pas les répéter."}
+          </p>
+        </Etape>
+
+        <Etape numero={2} titre="Coller dans Claude.ai">
+          <ClaudeLink variant="button" />
+          <p className="text-xs text-[#8A8F98] mt-2">
+            Collez le prompt tel quel dans une nouvelle conversation, puis copiez la réponse.
+          </p>
+        </Etape>
+
+        <Etape numero={3} titre="Enregistrer le message envoyé">
+          <textarea
+            className={inputCls}
+            rows={5}
+            placeholder="Collez ici le message renvoyé par Claude, ou rédigez-le à la main…"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+          />
           <button
             onClick={marquerEnvoye}
-            className="mt-2 text-xs font-semibold text-navy underline"
+            disabled={!draft.trim()}
+            className="mt-2 text-xs font-semibold px-3 py-2 rounded-full bg-navy text-white disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Marquer comme envoyé (ajoute à l&apos;historique)
+            Enregistrer dans l&apos;historique
           </button>
+          <p className="text-xs text-[#8A8F98] mt-2">
+            Le prospect passe en Contacté et la date du jour est enregistrée. Rien n&apos;est
+            envoyé automatiquement à votre place.
+          </p>
+        </Etape>
+
+        {promptError && (
+          <div className="text-xs text-[#B0392B] bg-[#FBE9E7] rounded-lg px-3 py-2">
+            {promptError}
+          </div>
         )}
       </div>
 
