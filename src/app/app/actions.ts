@@ -42,7 +42,7 @@ export async function createProspect(input: {
     .select("id")
     .single();
   if (error) throw new Error(error.message);
-  revalidatePath("/app");
+  revalidatePath("/app", "layout");
   redirect(`/app/prospects/${data.id}`);
 }
 
@@ -65,8 +65,7 @@ export async function updateProspect(
   const { supabase } = await requireUser();
   const { error } = await supabase.from("prospects").update(patch).eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/app");
-  revalidatePath(`/app/prospects/${id}`);
+  revalidatePath("/app", "layout");
 }
 
 export async function marquerContacte(id: string) {
@@ -80,7 +79,7 @@ export async function deleteProspect(id: string) {
   const { supabase } = await requireUser();
   const { error } = await supabase.from("prospects").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/app");
+  revalidatePath("/app", "layout");
   redirect("/app");
 }
 
@@ -100,7 +99,5 @@ export async function addHistorique(prospectId: string, contenu: string, canal =
     .update({ statut: "contacte", date_contact: today })
     .eq("id", prospectId);
   if (e2) throw new Error(e2.message);
-  revalidatePath(`/app/prospects/${prospectId}`);
-  revalidatePath("/app");
-  revalidatePath("/app/relance");
+  revalidatePath("/app", "layout");
 }
