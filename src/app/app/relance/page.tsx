@@ -5,13 +5,17 @@ import { JoursBadge } from "../_components/badges";
 
 export default async function RelancePage() {
   const supabase = await createSupabaseServer();
-  const seuilIso = new Date(Date.now() - SEUIL_RELANCE * 86400000).toISOString().slice(0, 10);
   const { data } = await supabase
     .from("prospects")
     .select("*")
-    .or(`statut.eq.nrp,and(statut.eq.contacte,date_contact.lte.${seuilIso})`)
+    .in("statut", ["contacte", "nrp"])
     .order("date_contact", { ascending: true, nullsFirst: false });
-  const prospects = (data ?? []) as Prospect[];
+  const seuilMs = Date.now() - SEUIL_RELANCE * 86400000;
+  const prospects = ((data ?? []) as Prospect[]).filter((p) => {
+    if (p.statut === "nrp") return true;
+    if (!p.date_contact) return false;
+    return new Date(p.date_contact).getTime() <= seuilMs;
+  });
 
   if (prospects.length === 0) {
     return (

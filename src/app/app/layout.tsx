@@ -16,18 +16,23 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .eq("id", user.id)
     .single();
 
-  const isoSeuil = new Date(Date.now() - SEUIL_RELANCE * 86400000).toISOString().slice(0, 10);
-  const { count: aRelancerCount } = await supabase
+  const { data: aRelancerRows } = await supabase
     .from("prospects")
-    .select("id", { count: "exact", head: true })
-    .or(`statut.eq.nrp,and(statut.eq.contacte,date_contact.lte.${isoSeuil})`);
+    .select("statut, date_contact")
+    .in("statut", ["contacte", "nrp"]);
+  const seuilMs = Date.now() - SEUIL_RELANCE * 86400000;
+  const aRelancerCount = (aRelancerRows ?? []).filter((p) => {
+    if (p.statut === "nrp") return true;
+    if (!p.date_contact) return false;
+    return new Date(p.date_contact).getTime() <= seuilMs;
+  }).length;
 
   return (
     <div className="min-h-screen bg-cream text-navy">
       <AppHeader
         email={profile?.email ?? user.email ?? ""}
         role={profile?.role ?? "member"}
-        aRelancerCount={aRelancerCount ?? 0}
+        aRelancerCount={aRelancerCount}
       />
       <main className="max-w-5xl mx-auto px-5 py-6">{children}</main>
     </div>
