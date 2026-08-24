@@ -12,7 +12,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, email")
+    .select("role, email, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -30,7 +30,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-cream text-navy">
       <AppHeader
-        email={profile?.email ?? user.email ?? ""}
+        membre={{
+          id: user.id,
+          email: profile?.email ?? user.email ?? "",
+          avatar_url: profile?.avatar_url ?? null,
+        }}
         role={profile?.role ?? "member"}
         aRelancerCount={aRelancerCount}
       />

@@ -75,7 +75,12 @@ export type Prospect = {
   updated_at: string;
 };
 
-export type Membre = { id: string; email: string };
+export type Membre = { id: string; email: string; avatar_url?: string | null };
+
+// Une photo redimensionnée à 96 px pèse quelques kilo-octets. Au-delà, on
+// refuse : la colonne est lue à chaque affichage de la liste des prospects.
+export const AVATAR_MAX_OCTETS = 60_000;
+export const AVATAR_TAILLE = 96;
 
 // "prenom.nom@domaine.fr" donne "prenom.nom", suffisant pour distinguer
 // deux membres d'une même équipe sans afficher l'adresse entière.

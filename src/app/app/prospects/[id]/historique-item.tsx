@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Check, Pencil, Trash2, X } from "lucide-react";
 import { nomCourt, type Membre, type MessageHist } from "@/lib/domain";
+import { Avatar } from "../../_components/avatar";
 import { deleteHistorique, updateHistorique } from "../../actions";
 
 const inputCls =
@@ -22,10 +23,7 @@ export function HistoriqueItem({
   const [erreur, setErreur] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const auteur =
-    message.owner_id !== currentUserId && membreParId.has(message.owner_id)
-      ? nomCourt(membreParId.get(message.owner_id)!.email)
-      : null;
+  const autre = message.owner_id !== currentUserId ? membreParId.get(message.owner_id) : undefined;
 
   function enregistrer() {
     if (!texte.trim()) {
@@ -63,9 +61,12 @@ export function HistoriqueItem({
   return (
     <div className="bg-white border border-border rounded-lg p-3">
       <div className="flex items-start justify-between gap-2 mb-1">
-        <div className="text-[11px] text-[#8A8F98] font-semibold">
-          {message.date} · {message.canal}
-          {auteur ? ` · ${auteur}` : ""}
+        <div className="flex items-center gap-1.5 text-[11px] text-[#8A8F98] font-semibold">
+          {autre && <Avatar membre={autre} taille="sm" />}
+          <span>
+            {message.date} · {message.canal}
+            {autre ? ` · ${nomCourt(autre.email)}` : ""}
+          </span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {edition ? (

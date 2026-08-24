@@ -17,6 +17,7 @@ import {
   type Statut,
 } from "@/lib/domain";
 import { buildMessagePrompt, buildRelancePrompt, type PromptSet } from "@/lib/prompt";
+import { Avatar } from "../../_components/avatar";
 import { JoursBadge } from "../../_components/badges";
 import { ClaudeLink, CopyPromptButton, Etape } from "../../_components/copy-prompt-button";
 import { HistoriqueItem } from "./historique-item";
@@ -109,10 +110,13 @@ export function ProspectView({
       </div>
 
       {suiviParAutre && (
-        <div className="text-xs bg-[#FFF6E5] text-[#8A6410] border border-[#F0DFB8] rounded-lg px-3 py-2 mb-4">
-          Ce prospect est suivi par{" "}
-          <span className="font-semibold">{nomCourt(proprietaire.email)}</span>. Vous pouvez le
-          modifier, mais vérifiez son historique avant de lui écrire.
+        <div className="flex items-center gap-2.5 text-xs bg-[#FFF6E5] text-[#8A6410] border border-[#F0DFB8] rounded-lg px-3 py-2 mb-4">
+          <Avatar membre={proprietaire} taille="md" />
+          <span>
+            Ce prospect est suivi par{" "}
+            <span className="font-semibold">{nomCourt(proprietaire.email)}</span>. Vous pouvez le
+            modifier, mais vérifiez son historique avant de lui écrire.
+          </span>
         </div>
       )}
 

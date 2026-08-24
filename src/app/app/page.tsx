@@ -30,7 +30,7 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
   const { data } = await query;
   const prospects = (data ?? []) as Prospect[];
 
-  const { data: membresRows } = await supabase.from("profiles").select("id, email");
+  const { data: membresRows } = await supabase.from("profiles").select("id, email, avatar_url");
   const membres = new Map<string, Membre>(
     ((membresRows ?? []) as Membre[]).map((m) => [m.id, m])
   );
