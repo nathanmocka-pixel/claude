@@ -18,7 +18,7 @@ import {
 } from "@/lib/domain";
 import { buildMessagePrompt, buildRelancePrompt, type PromptSet } from "@/lib/prompt";
 import { Avatar } from "../../_components/avatar";
-import { JoursBadge } from "../../_components/badges";
+import { JoursBadge, RdvBadge } from "../../_components/badges";
 import { ClaudeLink, CopyPromptButton, Etape } from "../../_components/copy-prompt-button";
 import { HistoriqueItem } from "./historique-item";
 import {
@@ -133,7 +133,11 @@ export function ProspectView({
             </option>
           ))}
         </select>
-        <JoursBadge dateContact={local.date_contact} statut={local.statut} />
+        {local.statut === "rdv" && local.date_rdv ? (
+          <RdvBadge dateRdv={local.date_rdv} />
+        ) : (
+          <JoursBadge dateContact={local.date_contact} statut={local.statut} />
+        )}
         {local.statut === "a_qualifier" && (
           <button
             onClick={() => {
@@ -156,6 +160,13 @@ export function ProspectView({
           A répondu
         </label>
       </div>
+
+      {local.statut === "rdv" && !local.date_rdv && (
+        <div className="text-xs bg-[#E8F3EC] text-[#1E7A4C] border border-[#C6E3D2] rounded-lg px-3 py-2 mb-4">
+          Renseignez la date du RDV ci-dessous : c&apos;est elle qui fait remonter le prospect en
+          tête de la liste.
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 mb-4">
         <Field label="Poste">
@@ -225,6 +236,14 @@ export function ProspectView({
             className={inputCls}
             value={local.date_contact ?? ""}
             onChange={(e) => save({ date_contact: e.target.value || null })}
+          />
+        </Field>
+        <Field label="Date du RDV">
+          <input
+            type="date"
+            className={inputCls}
+            value={local.date_rdv ?? ""}
+            onChange={(e) => save({ date_rdv: e.target.value || null })}
           />
         </Field>
         <Field label="Signal détecté">

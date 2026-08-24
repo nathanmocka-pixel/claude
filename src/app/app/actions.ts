@@ -63,6 +63,7 @@ export async function updateProspect(
     priorite: Priorite;
     pain_point: string | null;
     date_contact: string | null;
+    date_rdv: string | null;
     note: string | null;
     signal: string | null;
     signal_date: string | null;

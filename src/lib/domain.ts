@@ -45,6 +45,31 @@ export function prioriteMeta(id: Priorite) {
   return PRIORITES.find((p) => p.id === id) ?? PRIORITES[1];
 }
 
+// Positif si la date est à venir, négatif si elle est passée, 0 aujourd'hui.
+export function joursAvant(dateStr: string | null | undefined): number | null {
+  const j = joursDepuis(dateStr);
+  return j === null ? null : -j;
+}
+
+// Un prospect en RDV daté passe devant tout le reste, du rendez-vous le plus
+// proche au plus lointain. Le reste garde l'ordre du dernier contact.
+export function rangListe(p: { statut: Statut; date_rdv: string | null }) {
+  if (p.statut !== "rdv") return 2;
+  return p.date_rdv ? 0 : 1;
+}
+
+export function trierListe<T extends { statut: Statut; date_rdv: string | null; date_contact: string | null }>(
+  prospects: T[]
+): T[] {
+  return prospects.slice().sort((a, b) => {
+    const ra = rangListe(a);
+    const rb = rangListe(b);
+    if (ra !== rb) return ra - rb;
+    if (ra === 0) return (a.date_rdv ?? "").localeCompare(b.date_rdv ?? "");
+    return (b.date_contact ?? "").localeCompare(a.date_contact ?? "");
+  });
+}
+
 export function joursDepuis(dateStr: string | null | undefined): number | null {
   if (!dateStr) return null;
   const d = new Date(dateStr);
@@ -66,6 +91,7 @@ export type Prospect = {
   priorite: Priorite;
   pain_point: string | null;
   date_contact: string | null;
+  date_rdv: string | null;
   note: string | null;
   signal: string | null;
   signal_date: string | null;

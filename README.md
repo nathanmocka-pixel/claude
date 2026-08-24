@@ -6,7 +6,7 @@ Stack : Next.js 15 (App Router, Server Components + Server Actions), Supabase (A
 
 ## Ce que fait l'app
 
-- **Liste des prospects** avec filtres statut / secteur / recherche libre
+- **Liste des prospects** avec filtres statut / secteur / recherche libre. Les RDV datés remontent en tête, du plus proche au plus lointain ; les prospects *dead* sont masqués sauf si on filtre explicitement sur ce statut
 - **Fiche prospect** éditable en direct (statut, priorité, pain point, note…) avec compteur de jours depuis le dernier contact et badge rouge dès 5 jours pour les prospects en statut *contacté*
 - **Vue « à relancer »** qui affiche uniquement les prospects contactés depuis 5 jours ou plus
 - **Tableau de bord** : total, contactés, taux RDV/close, répartition par statut et par secteur
@@ -51,6 +51,7 @@ supabase/
   migrations/0004_equipe_partagee.sql   base de prospects partagée par équipe
   migrations/0005_mcp_oauth.sql         serveur d'autorisation OAuth du connecteur MCP
   migrations/0006_avatars.sql           photo de profil des membres
+  migrations/0007_date_rdv.sql          date du rendez-vous pris
 ```
 
 ## Setup
@@ -58,7 +59,7 @@ supabase/
 ### 1. Créer le projet Supabase
 
 - https://supabase.com → New project, région Europe recommandée
-- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, `0002_prompts_signaux.sql`, `0003_fix_profiles_rls_recursion.sql`, `0004_equipe_partagee.sql`, `0005_mcp_oauth.sql`, `0006_avatars.sql`
+- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, `0002_prompts_signaux.sql`, `0003_fix_profiles_rls_recursion.sql`, `0004_equipe_partagee.sql`, `0005_mcp_oauth.sql`, `0006_avatars.sql`, `0007_date_rdv.sql`
 - Récupérer dans **Project Settings → API** :
   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
   - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`

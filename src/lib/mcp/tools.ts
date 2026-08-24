@@ -31,6 +31,11 @@ export const schemas = {
   update_prospect_status: {
     id: z.string().uuid().describe("Identifiant du prospect"),
     statut: z.enum(STATUT_IDS).describe("Nouveau statut dans le pipeline"),
+    date_rdv: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional()
+      .describe("Date du rendez-vous au format AAAA-MM-JJ, à renseigner avec le statut rdv"),
   },
   list_prospects: {
     statut: z.enum(STATUT_IDS).optional().describe("Filtre optionnel par statut"),
@@ -58,7 +63,7 @@ function exigeEquipe(ctx: Contexte) {
 }
 
 const CHAMPS =
-  "id, nom, entreprise, poste, linkedin, contact, secteur, statut, priorite, pain_point, date_contact, note, signal, signal_date, a_repondu, owner_id, created_at, updated_at";
+  "id, nom, entreprise, poste, linkedin, contact, secteur, statut, priorite, pain_point, date_contact, date_rdv, note, signal, signal_date, a_repondu, owner_id, created_at, updated_at";
 
 export async function createProspect(ctx: Contexte, args: {
   nom: string;
@@ -143,7 +148,10 @@ export async function getProspect(ctx: Contexte, args: { id: string }) {
   return { ...fiche, historique: historique ?? [] };
 }
 
-export async function updateProspectStatus(ctx: Contexte, args: { id: string; statut: Statut }) {
+export async function updateProspectStatus(
+  ctx: Contexte,
+  args: { id: string; statut: Statut; date_rdv?: string }
+) {
   const equipeId = exigeEquipe(ctx);
   await chargerFiche(equipeId, args.id);
 
@@ -153,6 +161,7 @@ export async function updateProspectStatus(ctx: Contexte, args: { id: string; st
   if (args.statut === "contacte") {
     patch.date_contact = new Date().toISOString().slice(0, 10);
   }
+  if (args.date_rdv) patch.date_rdv = args.date_rdv;
 
   const { data, error } = await admin
     .from("prospects")
