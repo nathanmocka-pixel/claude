@@ -47,6 +47,7 @@ supabase/
   migrations/0002_prompts_signaux.sql  prompts par compte, signaux, suivi des réponses
   migrations/0003_fix_profiles_rls_recursion.sql  policy profiles non récursive
   migrations/0004_equipe_partagee.sql   base de prospects partagée par équipe
+  migrations/0005_mcp_oauth.sql         serveur d'autorisation OAuth du connecteur MCP
 ```
 
 ## Setup
@@ -54,7 +55,7 @@ supabase/
 ### 1. Créer le projet Supabase
 
 - https://supabase.com → New project, région Europe recommandée
-- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, `0002_prompts_signaux.sql`, `0003_fix_profiles_rls_recursion.sql`, `0004_equipe_partagee.sql`
+- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, `0002_prompts_signaux.sql`, `0003_fix_profiles_rls_recursion.sql`, `0004_equipe_partagee.sql`, `0005_mcp_oauth.sql`
 - Récupérer dans **Project Settings → API** :
   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
   - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -114,3 +115,7 @@ Ouvrir http://localhost:3000, vous serez redirigé vers `/login`.
 - Pas d'édition de rôle depuis l'UI (seule la création avec le rôle initial est proposée ; passer par Supabase pour bump/rétrograder)
 - Pas de suppression d'un compte depuis l'UI (à faire dans Supabase Auth si besoin — la ligne `profiles` et les prospects cascadent)
 - La génération de message passe par le presse-papier (le CRM copie le prompt, vous le collez dans Claude.ai). Aucun appel d'API Claude n'est fait depuis le CRM lui-même, donc pas de coût récurrent
+
+## Connecteur MCP
+
+Le CRM s'expose aussi comme serveur MCP distant : `/api/mcp`, avec un serveur d'autorisation OAuth 2.1 adossé à Supabase Auth. Voir [`README-mcp.md`](./README-mcp.md) pour le branchement, le fonctionnement de l'autorisation et la procédure de test avec l'inspecteur MCP.

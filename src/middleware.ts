@@ -44,7 +44,14 @@ export async function middleware(request: NextRequest) {
 
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
+    // Un utilisateur déjà connecté qui arrive sur /login au milieu d'un flux
+    // OAuth doit repartir vers l'autorisation, pas vers l'accueil du CRM.
+    const suivant = request.nextUrl.searchParams.get("next");
+    if (suivant && suivant.startsWith("/")) {
+      return NextResponse.redirect(new URL(suivant, request.url));
+    }
     url.pathname = "/app";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 
@@ -52,5 +59,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  // /api/mcp s'authentifie par jeton Bearer et n'a pas de cookie de session :
+  // le faire passer par le rafraîchissement Supabase ne servirait à rien.
+  matcher: [
+    "/((?!api/mcp|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
