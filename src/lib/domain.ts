@@ -21,6 +21,22 @@ export const PRIORITES: { id: Priorite; label: string; color: string }[] = [
   { id: "froid", label: "Froid", color: "#5A7A9E" },
 ];
 
+// Ce qui a motivé l'ajout du prospect. L'offre d'emploi back office est le
+// signal le plus fiable : daté, vérifiable, et directement exploitable pour
+// construire le pain point du message.
+export const SIGNAUX = [
+  "Offre d'emploi admin / back office",
+  "Plusieurs outils mentionnés",
+  "Plainte sur la complexité de gestion",
+  "Croissance rapide",
+  "Multi-sites ou multi-marques",
+  "Recommandation / réseau",
+  "Autre",
+] as const;
+
+// Un signal de plus de 30 jours n'est plus un signal frais.
+export const SEUIL_SIGNAL_FRAIS = 30;
+
 export function statutMeta(id: Statut) {
   return STATUTS.find((s) => s.id === id) ?? STATUTS[0];
 }
@@ -51,9 +67,29 @@ export type Prospect = {
   pain_point: string | null;
   date_contact: string | null;
   note: string | null;
+  signal: string | null;
+  signal_date: string | null;
+  a_repondu: boolean;
+  equipe_id: string | null;
   created_at: string;
   updated_at: string;
 };
+
+export type Membre = { id: string; email: string };
+
+// "prenom.nom@domaine.fr" donne "prenom.nom", suffisant pour distinguer
+// deux membres d'une même équipe sans afficher l'adresse entière.
+export function nomCourt(email: string) {
+  return email.split("@")[0];
+}
+
+export function initiales(email: string) {
+  const base = nomCourt(email).replace(/[._-]+/g, " ").trim();
+  const mots = base.split(/\s+/).filter(Boolean);
+  if (mots.length === 0) return "?";
+  if (mots.length === 1) return mots[0].slice(0, 2).toUpperCase();
+  return (mots[0][0] + mots[1][0]).toUpperCase();
+}
 
 export type MessageHist = {
   id: string;

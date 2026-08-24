@@ -20,7 +20,9 @@ export default async function DashboardPage() {
     ["contacte", "rdv", "nrp", "close", "dead"].includes(p.statut)
   ).length;
   const rdvOuClose = prospects.filter((p) => p.statut === "rdv" || p.statut === "close").length;
-  const tauxReponse = contactes > 0 ? Math.round((rdvOuClose / contactes) * 100) : 0;
+  const tauxRdv = contactes > 0 ? Math.round((rdvOuClose / contactes) * 100) : 0;
+  const repondus = prospects.filter((p) => p.a_repondu).length;
+  const tauxReponse = contactes > 0 ? Math.round((repondus / contactes) * 100) : 0;
   const parStatut = STATUTS.map((s) => ({
     ...s,
     count: prospects.filter((p) => p.statut === s.id).length,
@@ -32,11 +34,16 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Metric label="Prospects" value={total} />
         <Metric label="Contactés" value={contactes} />
-        <Metric label="Taux RDV/close" value={`${tauxReponse}%`} />
+        <Metric label="Taux de réponse" value={`${tauxReponse}%`} />
+        <Metric label="Taux RDV/close" value={`${tauxRdv}%`} />
       </div>
+      <p className="text-xs text-[#8A8F98] -mt-3">
+        En prospection à froid, un taux de réponse entre 10 et 20 % reste normal, même avec un
+        message bien construit.
+      </p>
 
       <div className="bg-white border border-border rounded-xl p-4">
         <div className="font-display font-bold text-sm mb-3">Répartition par statut</div>

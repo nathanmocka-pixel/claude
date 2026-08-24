@@ -22,7 +22,10 @@ export function AppHeader({
       label: `À relancer${aRelancerCount ? ` (${aRelancerCount})` : ""}`,
       urgent: aRelancerCount > 0,
     },
+    { href: "/app/signaux", label: "Signaux" },
     { href: "/app/dashboard", label: "Tableau de bord" },
+    { href: "/app/contenu", label: "Contenu" },
+    { href: "/app/prompt", label: "Prompts" },
     ...(role === "admin" ? [{ href: "/app/comptes", label: "Comptes" }] : []),
   ];
 

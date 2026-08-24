@@ -1,14 +1,20 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { SECTEURS, STATUTS, type Prospect } from "@/lib/domain";
+import { SECTEURS, STATUTS, type Membre, type Prospect } from "@/lib/domain";
 import { JoursBadge, PrioriteDot, StatutBadge } from "./_components/badges";
+import { OwnerBadge } from "./_components/owner-badge";
 
-type SP = Promise<{ statut?: string; secteur?: string; q?: string }>;
+type SP = Promise<{ statut?: string; secteur?: string; q?: string; qui?: string }>;
 
 export default async function ProspectsPage({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
   const supabase = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   let query = supabase
     .from("prospects")
@@ -16,12 +22,19 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
     .order("date_contact", { ascending: false, nullsFirst: false });
   if (sp.statut && sp.statut !== "tous") query = query.eq("statut", sp.statut);
   if (sp.secteur && sp.secteur !== "tous") query = query.eq("secteur", sp.secteur);
+  if (sp.qui === "moi") query = query.eq("owner_id", user.id);
   if (sp.q?.trim()) {
     const term = `%${sp.q.trim()}%`;
     query = query.or(`nom.ilike.${term},entreprise.ilike.${term}`);
   }
   const { data } = await query;
   const prospects = (data ?? []) as Prospect[];
+
+  const { data: membresRows } = await supabase.from("profiles").select("id, email");
+  const membres = new Map<string, Membre>(
+    ((membresRows ?? []) as Membre[]).map((m) => [m.id, m])
+  );
+  const equipePartagee = membres.size > 1;
 
   return (
     <div>
@@ -60,6 +73,16 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
             <option key={s}>{s}</option>
           ))}
         </select>
+        {equipePartagee && (
+          <select
+            name="qui"
+            defaultValue={sp.qui ?? "tous"}
+            className="text-sm rounded-lg border border-border bg-white px-2.5 py-2 focus:outline-none"
+          >
+            <option value="tous">Toute l&apos;équipe</option>
+            <option value="moi">Mes prospects</option>
+          </select>
+        )}
         <button
           type="submit"
           className="text-sm font-semibold px-4 py-2 rounded-lg bg-navy text-white"
@@ -90,7 +113,8 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
+                <OwnerBadge ownerId={p.owner_id} membres={membres} currentUserId={user.id} />
                 <StatutBadge statut={p.statut} />
                 <JoursBadge dateContact={p.date_contact} statut={p.statut} />
               </div>

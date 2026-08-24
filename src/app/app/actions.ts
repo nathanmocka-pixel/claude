@@ -23,6 +23,8 @@ export async function createProspect(input: {
   secteur?: string;
   priorite?: Priorite;
   pain_point?: string;
+  signal?: string;
+  signal_date?: string;
 }) {
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase
@@ -37,12 +39,14 @@ export async function createProspect(input: {
       secteur: input.secteur || null,
       priorite: input.priorite || "tiede",
       pain_point: input.pain_point || null,
+      signal: input.signal || null,
+      signal_date: input.signal_date || null,
       statut: "a_qualifier",
     })
     .select("id")
     .single();
   if (error) throw new Error(error.message);
-  revalidatePath("/app");
+  revalidatePath("/app", "layout");
   redirect(`/app/prospects/${data.id}`);
 }
 
@@ -60,13 +64,15 @@ export async function updateProspect(
     pain_point: string | null;
     date_contact: string | null;
     note: string | null;
+    signal: string | null;
+    signal_date: string | null;
+    a_repondu: boolean;
   }>
 ) {
   const { supabase } = await requireUser();
   const { error } = await supabase.from("prospects").update(patch).eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/app");
-  revalidatePath(`/app/prospects/${id}`);
+  revalidatePath("/app", "layout");
 }
 
 export async function marquerContacte(id: string) {
@@ -80,8 +86,29 @@ export async function deleteProspect(id: string) {
   const { supabase } = await requireUser();
   const { error } = await supabase.from("prospects").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/app");
+  revalidatePath("/app", "layout");
   redirect("/app");
+}
+
+// Corriger une faute dans un message déjà enregistré, sans toucher à sa date
+// ni au statut du prospect : c'est une correction de saisie, pas un nouvel envoi.
+export async function updateHistorique(id: string, prospectId: string, contenu: string) {
+  const { supabase } = await requireUser();
+  const texte = contenu.trim();
+  if (!texte) throw new Error("Le message ne peut pas être vide.");
+  const { error } = await supabase
+    .from("messages_historique")
+    .update({ contenu: texte })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/app/prospects/${prospectId}`);
+}
+
+export async function deleteHistorique(id: string, prospectId: string) {
+  const { supabase } = await requireUser();
+  const { error } = await supabase.from("messages_historique").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/app/prospects/${prospectId}`);
 }
 
 export async function addHistorique(prospectId: string, contenu: string, canal = "LinkedIn") {
@@ -100,7 +127,5 @@ export async function addHistorique(prospectId: string, contenu: string, canal =
     .update({ statut: "contacte", date_contact: today })
     .eq("id", prospectId);
   if (e2) throw new Error(e2.message);
-  revalidatePath(`/app/prospects/${prospectId}`);
-  revalidatePath("/app");
-  revalidatePath("/app/relance");
+  revalidatePath("/app", "layout");
 }

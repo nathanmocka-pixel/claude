@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { SUPABASE_COOKIE_OPTIONS } from "./cookie-options";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -9,6 +10,7 @@ export async function createSupabaseServer() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: SUPABASE_COOKIE_OPTIONS,
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -16,7 +18,7 @@ export async function createSupabaseServer() {
         setAll(cookiesToSet: CookieToSet[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, { ...SUPABASE_COOKIE_OPTIONS, ...options })
             );
           } catch {
             // Server Component context — cookies are read-only here; middleware refreshes the session.

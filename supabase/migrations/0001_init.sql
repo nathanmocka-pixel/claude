@@ -16,15 +16,12 @@ create table public.profiles (
 
 alter table public.profiles enable row level security;
 
--- Chaque utilisateur lit son propre profil ; les admins lisent tous les profils.
+-- Chaque utilisateur lit son propre profil. La lecture de tous les profils
+-- par un admin passe par la clé service role côté serveur, jamais par la
+-- RLS : une policy qui interrogerait public.profiles pour vérifier le rôle
+-- déclencherait une récursion infinie et casserait toute lecture.
 create policy profiles_select_self on public.profiles
-  for select using (
-    auth.uid() = id
-    or exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid() and p.role = 'admin'
-    )
-  );
+  for select using (auth.uid() = id);
 
 -- Aucune écriture directe par le client — tout passe par le service role côté serveur.
 -- (Pas de policy insert/update/delete pour anon ou authenticated.)

@@ -5,14 +5,17 @@ import { JoursBadge } from "../_components/badges";
 
 export default async function RelancePage() {
   const supabase = await createSupabaseServer();
-  const seuilIso = new Date(Date.now() - SEUIL_RELANCE * 86400000).toISOString().slice(0, 10);
   const { data } = await supabase
     .from("prospects")
     .select("*")
-    .eq("statut", "contacte")
-    .lte("date_contact", seuilIso)
-    .order("date_contact", { ascending: true });
-  const prospects = (data ?? []) as Prospect[];
+    .in("statut", ["contacte", "nrp"])
+    .order("date_contact", { ascending: true, nullsFirst: false });
+  const seuilMs = Date.now() - SEUIL_RELANCE * 86400000;
+  const prospects = ((data ?? []) as Prospect[]).filter((p) => {
+    if (p.statut === "nrp") return true;
+    if (!p.date_contact) return false;
+    return new Date(p.date_contact).getTime() <= seuilMs;
+  });
 
   if (prospects.length === 0) {
     return (
@@ -28,7 +31,8 @@ export default async function RelancePage() {
   return (
     <div className="space-y-2">
       <p className="text-sm text-[#8A8F98] mb-3">
-        Prospects contactés il y a {SEUIL_RELANCE} jours ou plus, sans nouvelle relance.
+        Prospects contactés il y a {SEUIL_RELANCE} jours ou plus sans nouvelle relance, et tous
+        les prospects en statut NRP.
       </p>
       {prospects.map((p) => (
         <Link

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { SECTEURS, PRIORITES, type Priorite } from "@/lib/domain";
+import { SECTEURS, PRIORITES, SIGNAUX, type Priorite } from "@/lib/domain";
 import { createProspect } from "../actions";
 
 const inputCls =
@@ -24,6 +24,8 @@ export function NewProspectForm() {
   const [linkedin, setLinkedin] = useState("");
   const [contact, setContact] = useState("");
   const [priorite, setPriorite] = useState<Priorite>("tiede");
+  const [signal, setSignal] = useState("");
+  const [signalDate, setSignalDate] = useState(new Date().toISOString().slice(0, 10));
   const [painPoint, setPainPoint] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -43,6 +45,8 @@ export function NewProspectForm() {
           secteur,
           priorite,
           pain_point: painPoint,
+          signal,
+          signal_date: signal ? signalDate : "",
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erreur inconnue");
@@ -107,6 +111,29 @@ export function NewProspectForm() {
           ))}
         </select>
       </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Signal détecté">
+          <select
+            className={inputCls}
+            value={signal}
+            onChange={(e) => setSignal(e.target.value)}
+          >
+            <option value="">—</option>
+            {SIGNAUX.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Date du signal">
+          <input
+            type="date"
+            className={inputCls}
+            value={signalDate}
+            onChange={(e) => setSignalDate(e.target.value)}
+            disabled={!signal}
+          />
+        </Field>
+      </div>
       <Field label="Pain point détecté">
         <textarea
           className={inputCls}

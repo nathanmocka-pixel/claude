@@ -2,19 +2,24 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ChevronLeft, ClipboardCopy, ExternalLink, Trash2 } from "lucide-react";
+import { ChevronLeft, ExternalLink, Trash2 } from "lucide-react";
 import {
   PRIORITES,
   SECTEURS,
+  SIGNAUX,
   STATUTS,
+  nomCourt,
   statutMeta,
+  type Membre,
   type MessageHist,
   type Priorite,
   type Prospect,
   type Statut,
 } from "@/lib/domain";
-import { buildPromptForCopy } from "@/lib/prompt";
+import { buildMessagePrompt, buildRelancePrompt, type PromptSet } from "@/lib/prompt";
 import { JoursBadge } from "../../_components/badges";
+import { ClaudeLink, CopyPromptButton, Etape } from "../../_components/copy-prompt-button";
+import { HistoriqueItem } from "./historique-item";
 import {
   addHistorique,
   deleteProspect,
@@ -37,14 +42,23 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export function ProspectView({
   prospect,
   historique,
+  prompts,
+  membres,
+  currentUserId,
 }: {
   prospect: Prospect;
   historique: MessageHist[];
+  prompts: PromptSet;
+  membres: Membre[];
+  currentUserId: string;
 }) {
+  const membreParId = new Map(membres.map((m) => [m.id, m]));
+  const proprietaire = membreParId.get(prospect.owner_id);
+  const suiviParAutre = prospect.owner_id !== currentUserId && proprietaire;
   const [local, setLocal] = useState(prospect);
   const [draft, setDraft] = useState("");
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
-  const [copyError, setCopyError] = useState<string | null>(null);
+  const [consigne, setConsigne] = useState("");
+  const [promptError, setPromptError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   function save<K extends keyof Prospect>(patch: Partial<Pick<Prospect, K>>) {
@@ -54,31 +68,6 @@ export function ProspectView({
         // revert on failure would be nicer; keep simple: refresh to re-sync
       });
     });
-  }
-
-  async function copierPrompt() {
-    if (!local.pain_point) {
-      setCopyState("error");
-      setCopyError("Renseignez d'abord le pain point détecté.");
-      return;
-    }
-    setCopyError(null);
-    const prompt = buildPromptForCopy({
-      prenom: local.nom.split(" ")[0],
-      entreprise: local.entreprise,
-      secteur: local.secteur ?? "",
-      painPoint: local.pain_point,
-    });
-    try {
-      await navigator.clipboard.writeText(prompt);
-      setCopyState("copied");
-      setTimeout(() => setCopyState("idle"), 2500);
-    } catch {
-      setCopyState("error");
-      setCopyError(
-        "Impossible d'accéder au presse-papier. Copiez le prompt manuellement depuis la zone ci-dessous."
-      );
-    }
   }
 
   function marquerEnvoye() {
@@ -102,6 +91,7 @@ export function ProspectView({
   }
 
   const st = statutMeta(local.statut);
+  const dejaContacte = historique.length > 0;
 
   return (
     <div>
@@ -117,6 +107,14 @@ export function ProspectView({
           <Trash2 size={16} />
         </button>
       </div>
+
+      {suiviParAutre && (
+        <div className="text-xs bg-[#FFF6E5] text-[#8A6410] border border-[#F0DFB8] rounded-lg px-3 py-2 mb-4">
+          Ce prospect est suivi par{" "}
+          <span className="font-semibold">{nomCourt(proprietaire.email)}</span>. Vous pouvez le
+          modifier, mais vérifiez son historique avant de lui écrire.
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2 mb-5">
         <select
@@ -144,6 +142,15 @@ export function ProspectView({
             Marquer contacté
           </button>
         )}
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-[#5A6072] cursor-pointer">
+          <input
+            type="checkbox"
+            checked={local.a_repondu}
+            onChange={(e) => save({ a_repondu: e.target.checked })}
+            className="accent-[#16213E]"
+          />
+          A répondu
+        </label>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
@@ -216,6 +223,26 @@ export function ProspectView({
             onChange={(e) => save({ date_contact: e.target.value || null })}
           />
         </Field>
+        <Field label="Signal détecté">
+          <select
+            className={inputCls}
+            value={local.signal ?? ""}
+            onChange={(e) => save({ signal: e.target.value || null })}
+          >
+            <option value="">—</option>
+            {SIGNAUX.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Date du signal">
+          <input
+            type="date"
+            className={inputCls}
+            value={local.signal_date ?? ""}
+            onChange={(e) => save({ signal_date: e.target.value || null })}
+          />
+        </Field>
       </div>
 
       <div className="mb-4">
@@ -243,50 +270,83 @@ export function ProspectView({
         </Field>
       </div>
 
-      <div className="bg-white border border-border rounded-xl p-4 mb-5">
-        <div className="flex items-center justify-between mb-2">
+      <div className="bg-white border border-border rounded-xl p-4 mb-5 space-y-4">
+        <div>
           <div className="font-display font-bold text-sm">Rédiger un message</div>
-          <div className="flex items-center gap-2">
-            <a
-              href="https://claude.ai/new"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-navy underline"
-            >
-              Ouvrir Claude.ai
-            </a>
-            <button
-              onClick={copierPrompt}
-              className="flex items-center gap-1.5 text-xs font-semibold bg-navy text-white px-3 py-1.5 rounded-full"
-            >
-              <ClipboardCopy size={13} />
-              {copyState === "copied" ? "Prompt copié" : "Copier le prompt"}
-            </button>
-          </div>
+          <p className="text-xs text-[#8A8F98]">
+            {dejaContacte
+              ? "Ce prospect a déjà été contacté, la relance est l'étape logique."
+              : "Premier contact avec ce prospect."}
+          </p>
         </div>
-        <p className="text-xs text-[#8A8F98] mb-2">
-          Cliquez pour copier le prompt complet (règles de ton + contexte du prospect), collez-le
-          dans Claude.ai, puis collez sa réponse dans la zone ci-dessous.
-        </p>
-        {copyError && (
-          <div className="text-xs text-[#B0392B] bg-[#FBE9E7] rounded-lg px-3 py-2 mb-2">
-            {copyError}
+
+        <Etape numero={1} titre="Copier le prompt">
+          <textarea
+            className={`${inputCls} mb-2`}
+            rows={2}
+            value={consigne}
+            onChange={(e) => setConsigne(e.target.value)}
+            placeholder="Consigne pour ce message uniquement (optionnel). Par exemple : insister sur la double saisie, rester très court, mentionner qu'on s'est croisés à un événement…"
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <CopyPromptButton
+              label="Premier message"
+              variant={dejaContacte ? "ghost" : "primary"}
+              disabled={!local.pain_point}
+              onError={setPromptError}
+              build={() => ({ prompt: buildMessagePrompt(prompts, local, consigne) })}
+            />
+            <CopyPromptButton
+              label="Relance"
+              variant={dejaContacte ? "primary" : "ghost"}
+              disabled={!dejaContacte}
+              onError={setPromptError}
+              build={() => ({
+                prompt: buildRelancePrompt(prompts, local, historique, consigne),
+              })}
+            />
           </div>
-        )}
-        <textarea
-          className={inputCls}
-          rows={5}
-          placeholder="Collez ici le message renvoyé par Claude, ou rédigez-le à la main…"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-        />
-        {draft.trim() && (
+          <p className="text-xs text-[#8A8F98] mt-2">
+            {!local.pain_point
+              ? "Renseignez le pain point détecté plus haut pour activer le premier message."
+              : !dejaContacte
+                ? "La relance s'activera une fois un premier message enregistré à l'étape 3."
+                : "La relance reprend les messages déjà envoyés pour ne pas les répéter."}
+          </p>
+        </Etape>
+
+        <Etape numero={2} titre="Coller dans Claude.ai">
+          <ClaudeLink variant="button" />
+          <p className="text-xs text-[#8A8F98] mt-2">
+            Collez le prompt tel quel dans une nouvelle conversation, puis copiez la réponse.
+          </p>
+        </Etape>
+
+        <Etape numero={3} titre="Enregistrer le message envoyé">
+          <textarea
+            className={inputCls}
+            rows={5}
+            placeholder="Collez ici le message renvoyé par Claude, ou rédigez-le à la main…"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+          />
           <button
             onClick={marquerEnvoye}
-            className="mt-2 text-xs font-semibold text-navy underline"
+            disabled={!draft.trim()}
+            className="mt-2 text-xs font-semibold px-3 py-2 rounded-full bg-navy text-white disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Marquer comme envoyé (ajoute à l&apos;historique)
+            Enregistrer dans l&apos;historique
           </button>
+          <p className="text-xs text-[#8A8F98] mt-2">
+            Le prospect passe en Contacté et la date du jour est enregistrée. Rien n&apos;est
+            envoyé automatiquement à votre place.
+          </p>
+        </Etape>
+
+        {promptError && (
+          <div className="text-xs text-[#B0392B] bg-[#FBE9E7] rounded-lg px-3 py-2">
+            {promptError}
+          </div>
         )}
       </div>
 
@@ -297,12 +357,12 @@ export function ProspectView({
         ) : (
           <div className="space-y-2">
             {historique.map((h) => (
-              <div key={h.id} className="bg-white border border-border rounded-lg p-3">
-                <div className="text-[11px] text-[#8A8F98] font-semibold mb-1">
-                  {h.date} · {h.canal}
-                </div>
-                <div className="text-sm text-[#2E3440] whitespace-pre-wrap">{h.contenu}</div>
-              </div>
+              <HistoriqueItem
+                key={h.id}
+                message={h}
+                membreParId={membreParId}
+                currentUserId={currentUserId}
+              />
             ))}
           </div>
         )}
