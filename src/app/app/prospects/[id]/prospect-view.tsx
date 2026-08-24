@@ -19,6 +19,7 @@ import {
 import { buildMessagePrompt, buildRelancePrompt, type PromptSet } from "@/lib/prompt";
 import { JoursBadge } from "../../_components/badges";
 import { ClaudeLink, CopyPromptButton, Etape } from "../../_components/copy-prompt-button";
+import { HistoriqueItem } from "./historique-item";
 import {
   addHistorique,
   deleteProspect,
@@ -356,15 +357,12 @@ export function ProspectView({
         ) : (
           <div className="space-y-2">
             {historique.map((h) => (
-              <div key={h.id} className="bg-white border border-border rounded-lg p-3">
-                <div className="text-[11px] text-[#8A8F98] font-semibold mb-1">
-                  {h.date} · {h.canal}
-                  {membreParId.has(h.owner_id) && h.owner_id !== currentUserId
-                    ? ` · ${nomCourt(membreParId.get(h.owner_id)!.email)}`
-                    : ""}
-                </div>
-                <div className="text-sm text-[#2E3440] whitespace-pre-wrap">{h.contenu}</div>
-              </div>
+              <HistoriqueItem
+                key={h.id}
+                message={h}
+                membreParId={membreParId}
+                currentUserId={currentUserId}
+              />
             ))}
           </div>
         )}

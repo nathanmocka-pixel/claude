@@ -90,6 +90,27 @@ export async function deleteProspect(id: string) {
   redirect("/app");
 }
 
+// Corriger une faute dans un message déjà enregistré, sans toucher à sa date
+// ni au statut du prospect : c'est une correction de saisie, pas un nouvel envoi.
+export async function updateHistorique(id: string, prospectId: string, contenu: string) {
+  const { supabase } = await requireUser();
+  const texte = contenu.trim();
+  if (!texte) throw new Error("Le message ne peut pas être vide.");
+  const { error } = await supabase
+    .from("messages_historique")
+    .update({ contenu: texte })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/app/prospects/${prospectId}`);
+}
+
+export async function deleteHistorique(id: string, prospectId: string) {
+  const { supabase } = await requireUser();
+  const { error } = await supabase.from("messages_historique").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/app/prospects/${prospectId}`);
+}
+
 export async function addHistorique(prospectId: string, contenu: string, canal = "LinkedIn") {
   const { supabase, user } = await requireUser();
   const today = new Date().toISOString().slice(0, 10);
