@@ -97,19 +97,35 @@ function ficheProspect(p: Prospect) {
   return lignes.join("\n");
 }
 
-export function buildMessagePrompt(prompts: PromptSet, prospect: Prospect) {
+// Instruction valable pour ce message seulement, saisie au moment de copier
+// le prompt. Placée en dernier pour rester la consigne la plus fraîche.
+function blocConsigne(consigne: string | undefined) {
+  if (!consigne?.trim()) return "";
+  return bloc(
+    "CONSIGNE PONCTUELLE POUR CE MESSAGE",
+    `${consigne.trim()}\n\nCette consigne s'applique en plus des règles ci-dessus. En cas de contradiction avec les interdits de forme ou avec la règle sur la preuve client, ce sont les règles ci-dessus qui l'emportent.`
+  );
+}
+
+export function buildMessagePrompt(
+  prompts: PromptSet,
+  prospect: Prospect,
+  consigne?: string
+) {
   return assemble([
     prompts.contexte,
     prompts.regles_message,
     bloc("ANGLE DU SECTEUR", angleSecteur(prospect.secteur)),
     bloc("FICHE DU PROSPECT", ficheProspect(prospect)),
+    blocConsigne(consigne),
   ]);
 }
 
 export function buildRelancePrompt(
   prompts: PromptSet,
   prospect: Prospect,
-  historique: MessageHist[]
+  historique: MessageHist[],
+  consigne?: string
 ) {
   const envoyes = historique
     .slice()
@@ -126,6 +142,7 @@ export function buildRelancePrompt(
       "MESSAGES DÉJÀ ENVOYÉS, À NE PAS RÉPÉTER",
       envoyes || "Aucun message enregistré dans l'historique."
     ),
+    blocConsigne(consigne),
   ]);
 }
 

@@ -47,6 +47,7 @@ export function ProspectView({
 }) {
   const [local, setLocal] = useState(prospect);
   const [draft, setDraft] = useState("");
+  const [consigne, setConsigne] = useState("");
   const [promptError, setPromptError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
@@ -262,20 +263,29 @@ export function ProspectView({
         </div>
 
         <Etape numero={1} titre="Copier le prompt">
+          <textarea
+            className={`${inputCls} mb-2`}
+            rows={2}
+            value={consigne}
+            onChange={(e) => setConsigne(e.target.value)}
+            placeholder="Consigne pour ce message uniquement (optionnel). Par exemple : insister sur la double saisie, rester très court, mentionner qu'on s'est croisés à un événement…"
+          />
           <div className="flex flex-wrap items-center gap-2">
             <CopyPromptButton
               label="Premier message"
               variant={dejaContacte ? "ghost" : "primary"}
               disabled={!local.pain_point}
               onError={setPromptError}
-              build={() => ({ prompt: buildMessagePrompt(prompts, local) })}
+              build={() => ({ prompt: buildMessagePrompt(prompts, local, consigne) })}
             />
             <CopyPromptButton
               label="Relance"
               variant={dejaContacte ? "primary" : "ghost"}
               disabled={!dejaContacte}
               onError={setPromptError}
-              build={() => ({ prompt: buildRelancePrompt(prompts, local, historique) })}
+              build={() => ({
+                prompt: buildRelancePrompt(prompts, local, historique, consigne),
+              })}
             />
           </div>
           <p className="text-xs text-[#8A8F98] mt-2">
