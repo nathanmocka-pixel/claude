@@ -45,6 +45,7 @@ src/
 supabase/
   migrations/0001_init.sql       schéma + RLS + trigger profil
   migrations/0002_prompts_signaux.sql  prompts par compte, signaux, suivi des réponses
+  migrations/0003_fix_profiles_rls_recursion.sql  policy profiles non récursive
 ```
 
 ## Setup
@@ -52,7 +53,7 @@ supabase/
 ### 1. Créer le projet Supabase
 
 - https://supabase.com → New project, région Europe recommandée
-- Une fois créé, ouvrir **SQL Editor** et coller le contenu de `supabase/migrations/0001_init.sql`, puis Run. Faire ensuite de même avec `supabase/migrations/0002_prompts_signaux.sql`, dans une requête séparée
+- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, puis `0002_prompts_signaux.sql`, puis `0003_fix_profiles_rls_recursion.sql`
 - Récupérer dans **Project Settings → API** :
   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
   - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
