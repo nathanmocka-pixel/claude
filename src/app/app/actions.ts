@@ -23,6 +23,8 @@ export async function createProspect(input: {
   secteur?: string;
   priorite?: Priorite;
   pain_point?: string;
+  signal?: string;
+  signal_date?: string;
 }) {
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase
@@ -37,6 +39,8 @@ export async function createProspect(input: {
       secteur: input.secteur || null,
       priorite: input.priorite || "tiede",
       pain_point: input.pain_point || null,
+      signal: input.signal || null,
+      signal_date: input.signal_date || null,
       statut: "a_qualifier",
     })
     .select("id")
@@ -60,6 +64,9 @@ export async function updateProspect(
     pain_point: string | null;
     date_contact: string | null;
     note: string | null;
+    signal: string | null;
+    signal_date: string | null;
+    a_repondu: boolean;
   }>
 ) {
   const { supabase } = await requireUser();

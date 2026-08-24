@@ -10,7 +10,10 @@ Stack : Next.js 15 (App Router, Server Components + Server Actions), Supabase (A
 - **Fiche prospect** éditable en direct (statut, priorité, pain point, note…) avec compteur de jours depuis le dernier contact et badge rouge dès 5 jours pour les prospects en statut *contacté*
 - **Vue « à relancer »** qui affiche uniquement les prospects contactés depuis 5 jours ou plus
 - **Tableau de bord** : total, contactés, taux RDV/close, répartition par statut et par secteur
-- **Prompt Claude prêt à copier** — bouton qui met dans le presse-papier le prompt système complet (règles de ton du prompt de prospection : vouvoiement, trois phrases, pas d'appel, question ouverte…) + le contexte du prospect. Vous le collez dans votre Claude.ai, vous copiez la réponse dans le CRM. Aucune clé d'API à gérer, aucun coût
+- **Prompts Claude prêts à copier** — sur la fiche prospect, deux boutons mettent dans le presse-papier le prompt complet (contexte de marque + règles de ton + angle du secteur + fiche du prospect) pour un **message initial** ou pour une **relance** qui tient compte des messages déjà envoyés. Vous le collez dans votre Claude.ai, vous copiez la réponse dans le CRM. Aucune clé d'API à gérer, aucun coût
+- **Studio contenu** (`/app/contenu`) — même mécanique pour les **posts LinkedIn**, les **commentaires d'engagement** (tutoiement, une à deux phrases, jamais de pitch) et les **carrousels** (structure erreur / bon réflexe + identité visuelle)
+- **Prompts par compte** (`/app/prompt`) — chaque utilisateur édite son propre contexte de marque et ses règles par type de contenu. Nathan garde les siens, un autre compte met les siens, sans toucher au code
+- **Signaux** (`/app/signaux`) — chaque prospect peut porter le signal qui a motivé son ajout (offre d'emploi back office, plainte publique, croissance rapide…) avec sa date, listés du plus frais au plus ancien
 - **Gestion des comptes** (admin uniquement) : l'admin crée les comptes des autres utilisateurs, chaque compte ne voit que ses propres prospects
 - **Auth Supabase** email/mot de passe, aucune inscription publique
 
@@ -25,17 +28,23 @@ src/
       page.tsx          liste des prospects
       relance/          vue à relancer
       dashboard/        tableau de bord
+      signaux/          prospects ajoutés sur signal, du plus frais au plus ancien
       nouveau/          formulaire nouveau prospect
       prospects/[id]/   fiche prospect
+      contenu/          studio post / commentaire / carrousel
+      prompt/           éditeur des prompts du compte
       comptes/          gestion des comptes (admin)
       actions.ts        server actions CRUD sur prospects
   lib/
-    domain.ts           types + constantes métier (statuts, priorités…)
-    prompt.ts           system prompt + builder du prompt à copier
+    domain.ts           types + constantes métier (statuts, priorités, signaux…)
+    prompt.ts           assemblage des prompts + angle par secteur
+    default-prompts.ts  valeurs de départ d'un nouveau compte
+    prompts-server.ts   chargement des prompts du compte connecté
     supabase/           clients browser / server / admin (service role)
   middleware.ts         garde d'auth sur /app
 supabase/
-  migrations/0001_init.sql  schéma + RLS + trigger profil
+  migrations/0001_init.sql       schéma + RLS + trigger profil
+  migrations/0002_prompts_signaux.sql  prompts par compte, signaux, suivi des réponses
 ```
 
 ## Setup
@@ -43,7 +52,7 @@ supabase/
 ### 1. Créer le projet Supabase
 
 - https://supabase.com → New project, région Europe recommandée
-- Une fois créé, ouvrir **SQL Editor** et coller le contenu de `supabase/migrations/0001_init.sql`, puis Run
+- Une fois créé, ouvrir **SQL Editor** et coller le contenu de `supabase/migrations/0001_init.sql`, puis Run. Faire ensuite de même avec `supabase/migrations/0002_prompts_signaux.sql`, dans une requête séparée
 - Récupérer dans **Project Settings → API** :
   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
   - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`

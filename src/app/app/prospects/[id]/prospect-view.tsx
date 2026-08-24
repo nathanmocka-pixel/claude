@@ -2,10 +2,11 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ChevronLeft, ClipboardCopy, ExternalLink, Trash2 } from "lucide-react";
+import { ChevronLeft, ExternalLink, Trash2 } from "lucide-react";
 import {
   PRIORITES,
   SECTEURS,
+  SIGNAUX,
   STATUTS,
   statutMeta,
   type MessageHist,
@@ -13,8 +14,9 @@ import {
   type Prospect,
   type Statut,
 } from "@/lib/domain";
-import { buildPromptForCopy } from "@/lib/prompt";
+import { buildMessagePrompt, buildRelancePrompt, type PromptSet } from "@/lib/prompt";
 import { JoursBadge } from "../../_components/badges";
+import { ClaudeLink, CopyPromptButton } from "../../_components/copy-prompt-button";
 import {
   addHistorique,
   deleteProspect,
@@ -37,14 +39,15 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export function ProspectView({
   prospect,
   historique,
+  prompts,
 }: {
   prospect: Prospect;
   historique: MessageHist[];
+  prompts: PromptSet;
 }) {
   const [local, setLocal] = useState(prospect);
   const [draft, setDraft] = useState("");
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
-  const [copyError, setCopyError] = useState<string | null>(null);
+  const [promptError, setPromptError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   function save<K extends keyof Prospect>(patch: Partial<Pick<Prospect, K>>) {
@@ -54,31 +57,6 @@ export function ProspectView({
         // revert on failure would be nicer; keep simple: refresh to re-sync
       });
     });
-  }
-
-  async function copierPrompt() {
-    if (!local.pain_point) {
-      setCopyState("error");
-      setCopyError("Renseignez d'abord le pain point détecté.");
-      return;
-    }
-    setCopyError(null);
-    const prompt = buildPromptForCopy({
-      prenom: local.nom.split(" ")[0],
-      entreprise: local.entreprise,
-      secteur: local.secteur ?? "",
-      painPoint: local.pain_point,
-    });
-    try {
-      await navigator.clipboard.writeText(prompt);
-      setCopyState("copied");
-      setTimeout(() => setCopyState("idle"), 2500);
-    } catch {
-      setCopyState("error");
-      setCopyError(
-        "Impossible d'accéder au presse-papier. Copiez le prompt manuellement depuis la zone ci-dessous."
-      );
-    }
   }
 
   function marquerEnvoye() {
@@ -102,6 +80,7 @@ export function ProspectView({
   }
 
   const st = statutMeta(local.statut);
+  const dejaContacte = historique.length > 0;
 
   return (
     <div>
@@ -144,6 +123,15 @@ export function ProspectView({
             Marquer contacté
           </button>
         )}
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-[#5A6072] cursor-pointer">
+          <input
+            type="checkbox"
+            checked={local.a_repondu}
+            onChange={(e) => save({ a_repondu: e.target.checked })}
+            className="accent-[#16213E]"
+          />
+          A répondu
+        </label>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
@@ -216,6 +204,26 @@ export function ProspectView({
             onChange={(e) => save({ date_contact: e.target.value || null })}
           />
         </Field>
+        <Field label="Signal détecté">
+          <select
+            className={inputCls}
+            value={local.signal ?? ""}
+            onChange={(e) => save({ signal: e.target.value || null })}
+          >
+            <option value="">—</option>
+            {SIGNAUX.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Date du signal">
+          <input
+            type="date"
+            className={inputCls}
+            value={local.signal_date ?? ""}
+            onChange={(e) => save({ signal_date: e.target.value || null })}
+          />
+        </Field>
       </div>
 
       <div className="mb-4">
@@ -244,33 +252,36 @@ export function ProspectView({
       </div>
 
       <div className="bg-white border border-border rounded-xl p-4 mb-5">
-        <div className="flex items-center justify-between mb-2">
-          <div className="font-display font-bold text-sm">Rédiger un message</div>
-          <div className="flex items-center gap-2">
-            <a
-              href="https://claude.ai/new"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-navy underline"
-            >
-              Ouvrir Claude.ai
-            </a>
-            <button
-              onClick={copierPrompt}
-              className="flex items-center gap-1.5 text-xs font-semibold bg-navy text-white px-3 py-1.5 rounded-full"
-            >
-              <ClipboardCopy size={13} />
-              {copyState === "copied" ? "Prompt copié" : "Copier le prompt"}
-            </button>
-          </div>
-        </div>
-        <p className="text-xs text-[#8A8F98] mb-2">
-          Cliquez pour copier le prompt complet (règles de ton + contexte du prospect), collez-le
-          dans Claude.ai, puis collez sa réponse dans la zone ci-dessous.
+        <div className="font-display font-bold text-sm mb-2">Rédiger un message</div>
+        <p className="text-xs text-[#8A8F98] mb-3">
+          Le prompt reprend vos règles, l&apos;angle du secteur et la fiche du prospect. Collez-le
+          dans Claude.ai, puis rapatriez la réponse ci-dessous.
         </p>
-        {copyError && (
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <CopyPromptButton
+            label="Prompt message"
+            onError={setPromptError}
+            build={() =>
+              local.pain_point
+                ? { prompt: buildMessagePrompt(prompts, local) }
+                : { error: "Renseignez d'abord le pain point détecté." }
+            }
+          />
+          <CopyPromptButton
+            label="Prompt relance"
+            variant="ghost"
+            onError={setPromptError}
+            build={() =>
+              dejaContacte
+                ? { prompt: buildRelancePrompt(prompts, local, historique) }
+                : { error: "Aucun message dans l'historique : commencez par le premier message." }
+            }
+          />
+          <ClaudeLink />
+        </div>
+        {promptError && (
           <div className="text-xs text-[#B0392B] bg-[#FBE9E7] rounded-lg px-3 py-2 mb-2">
-            {copyError}
+            {promptError}
           </div>
         )}
         <textarea

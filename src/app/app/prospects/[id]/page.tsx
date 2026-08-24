@@ -1,5 +1,6 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { getPrompts } from "@/lib/prompts-server";
 import type { MessageHist, Prospect } from "@/lib/domain";
 import { ProspectView } from "./prospect-view";
 
@@ -10,6 +11,11 @@ export default async function ProspectPage({
 }) {
   const { id } = await params;
   const supabase = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
   const { data: prospect } = await supabase
     .from("prospects")
     .select("*")
@@ -24,10 +30,13 @@ export default async function ProspectPage({
     .order("date", { ascending: false })
     .order("created_at", { ascending: false });
 
+  const prompts = await getPrompts(user.id);
+
   return (
     <ProspectView
       prospect={prospect as Prospect}
       historique={(historique ?? []) as MessageHist[]}
+      prompts={prompts}
     />
   );
 }
