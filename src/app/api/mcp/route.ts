@@ -103,7 +103,7 @@ function construireServeur(ctx: Contexte) {
     {
       title: "Changer le statut d'un prospect",
       description:
-        "Déplace un prospect dans le pipeline. Statuts possibles : a_qualifier, contacte, rdv, nrp, close, dead. Passer à « contacte » met la date de dernier contact à aujourd'hui.",
+        "Déplace un prospect dans le pipeline. Statuts possibles : a_qualifier, contacte, rdv, nrp, close, dead. Passer à « contacte » met la date de dernier contact à aujourd'hui. Avec le statut « rdv », renseigner date_rdv fait remonter le prospect en tête de la liste du CRM.",
       inputSchema: schemas.update_prospect_status,
     },
     async (args) => executer(() => updateProspectStatus(ctx, args))

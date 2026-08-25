@@ -17,7 +17,8 @@ import {
   type Statut,
 } from "@/lib/domain";
 import { buildMessagePrompt, buildRelancePrompt, type PromptSet } from "@/lib/prompt";
-import { JoursBadge } from "../../_components/badges";
+import { Avatar } from "../../_components/avatar";
+import { JoursBadge, RdvBadge } from "../../_components/badges";
 import { ClaudeLink, CopyPromptButton, Etape } from "../../_components/copy-prompt-button";
 import { HistoriqueItem } from "./historique-item";
 import {
@@ -103,16 +104,26 @@ export function ProspectView({
           <div className="font-display font-bold truncate">{local.nom}</div>
           <div className="text-xs text-[#8A8F98] truncate">{local.entreprise}</div>
         </div>
+        {proprietaire && (
+          <Avatar
+            membre={proprietaire}
+            taille="md"
+            titre={suiviParAutre ? `Suivi par ${nomCourt(proprietaire.email)}` : "Vous"}
+          />
+        )}
         <button onClick={onDelete} className="text-[#B4B7BD] hover:text-[#B0392B]">
           <Trash2 size={16} />
         </button>
       </div>
 
       {suiviParAutre && (
-        <div className="text-xs bg-[#FFF6E5] text-[#8A6410] border border-[#F0DFB8] rounded-lg px-3 py-2 mb-4">
-          Ce prospect est suivi par{" "}
-          <span className="font-semibold">{nomCourt(proprietaire.email)}</span>. Vous pouvez le
-          modifier, mais vérifiez son historique avant de lui écrire.
+        <div className="flex items-center gap-2.5 text-xs bg-[#FFF6E5] text-[#8A6410] border border-[#F0DFB8] rounded-lg px-3 py-2 mb-4">
+          <Avatar membre={proprietaire} taille="md" />
+          <span>
+            Ce prospect est suivi par{" "}
+            <span className="font-semibold">{nomCourt(proprietaire.email)}</span>. Vous pouvez le
+            modifier, mais vérifiez son historique avant de lui écrire.
+          </span>
         </div>
       )}
 
@@ -129,7 +140,11 @@ export function ProspectView({
             </option>
           ))}
         </select>
-        <JoursBadge dateContact={local.date_contact} statut={local.statut} />
+        {local.statut === "rdv" && local.date_rdv ? (
+          <RdvBadge dateRdv={local.date_rdv} />
+        ) : (
+          <JoursBadge dateContact={local.date_contact} statut={local.statut} />
+        )}
         {local.statut === "a_qualifier" && (
           <button
             onClick={() => {
@@ -152,6 +167,13 @@ export function ProspectView({
           A répondu
         </label>
       </div>
+
+      {local.statut === "rdv" && !local.date_rdv && (
+        <div className="text-xs bg-[#E8F3EC] text-[#1E7A4C] border border-[#C6E3D2] rounded-lg px-3 py-2 mb-4">
+          Renseignez la date du RDV ci-dessous : c&apos;est elle qui fait remonter le prospect en
+          tête de la liste.
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 mb-4">
         <Field label="Poste">
@@ -221,6 +243,14 @@ export function ProspectView({
             className={inputCls}
             value={local.date_contact ?? ""}
             onChange={(e) => save({ date_contact: e.target.value || null })}
+          />
+        </Field>
+        <Field label="Date du RDV">
+          <input
+            type="date"
+            className={inputCls}
+            value={local.date_rdv ?? ""}
+            onChange={(e) => save({ date_rdv: e.target.value || null })}
           />
         </Field>
         <Field label="Signal détecté">

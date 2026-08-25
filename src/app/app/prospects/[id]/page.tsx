@@ -32,7 +32,7 @@ export default async function ProspectPage({
 
   const prompts = await getPrompts(user.id);
 
-  const { data: membresRows } = await supabase.from("profiles").select("id, email");
+  const { data: membresRows } = await supabase.from("profiles").select("id, email, avatar_url");
   const membres = (membresRows ?? []) as Membre[];
 
   return (

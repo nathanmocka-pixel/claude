@@ -1,37 +1,39 @@
-import { initiales, nomCourt, type Membre } from "@/lib/domain";
+import { nomCourt, type Membre } from "@/lib/domain";
+import { Avatar } from "./avatar";
 
-// Avec une base partagée, savoir qui suit un prospect évite de le contacter
-// deux fois. Le badge n'apparaît que pour les prospects des autres membres :
-// sur ses propres fiches il n'apporterait rien.
+// Le visage apparaît sur toutes les fiches, y compris les siennes : c'est
+// l'alternance des deux photos qui rend la liste lisible d'un coup d'œil.
+// Ne montrer que celles des autres laissait des trous et cassait la lecture.
 export function OwnerBadge({
   ownerId,
   membres,
   currentUserId,
-  format = "initiales",
+  format = "avatar",
 }: {
   ownerId: string;
   membres: Map<string, Membre>;
   currentUserId: string;
-  format?: "initiales" | "nom";
+  format?: "avatar" | "nom";
 }) {
-  if (ownerId === currentUserId) return null;
   const membre = membres.get(ownerId);
   if (!membre) return null;
+  const soi = ownerId === currentUserId;
+  const titre = soi ? "Vous" : `Suivi par ${nomCourt(membre.email)}`;
 
   if (format === "nom") {
     return (
-      <span className="text-xs text-[#8A8F98]">
-        Suivi par <span className="font-semibold text-[#5A6072]">{nomCourt(membre.email)}</span>
+      <span className="inline-flex items-center gap-1.5 text-xs text-[#8A8F98]">
+        <Avatar membre={membre} taille="sm" titre={titre} />
+        {soi ? (
+          "Vous suivez ce prospect"
+        ) : (
+          <>
+            Suivi par <span className="font-semibold text-[#5A6072]">{nomCourt(membre.email)}</span>
+          </>
+        )}
       </span>
     );
   }
 
-  return (
-    <span
-      title={`Suivi par ${nomCourt(membre.email)}`}
-      className="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#EEF0F3] text-[#5A6072] text-[10px] font-bold"
-    >
-      {initiales(membre.email)}
-    </span>
-  );
+  return <Avatar membre={membre} taille="md" titre={titre} />;
 }

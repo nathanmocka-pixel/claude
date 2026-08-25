@@ -1,5 +1,11 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { SECTEURS, STATUTS, type Prospect } from "@/lib/domain";
+import {
+  SECTEURS,
+  STATUTS,
+  STATUTS_AVANCES,
+  STATUTS_CONTACTES,
+  type Prospect,
+} from "@/lib/domain";
 
 function Metric({ label, value }: { label: string; value: number | string }) {
   return (
@@ -16,11 +22,9 @@ export default async function DashboardPage() {
   const prospects = (data ?? []) as Prospect[];
 
   const total = prospects.length;
-  const contactes = prospects.filter((p) =>
-    ["contacte", "rdv", "nrp", "close", "dead"].includes(p.statut)
-  ).length;
-  const rdvOuClose = prospects.filter((p) => p.statut === "rdv" || p.statut === "close").length;
-  const tauxRdv = contactes > 0 ? Math.round((rdvOuClose / contactes) * 100) : 0;
+  const contactes = prospects.filter((p) => STATUTS_CONTACTES.includes(p.statut)).length;
+  const avances = prospects.filter((p) => STATUTS_AVANCES.includes(p.statut)).length;
+  const tauxRdv = contactes > 0 ? Math.round((avances / contactes) * 100) : 0;
   const repondus = prospects.filter((p) => p.a_repondu).length;
   const tauxReponse = contactes > 0 ? Math.round((repondus / contactes) * 100) : 0;
   const parStatut = STATUTS.map((s) => ({
@@ -38,7 +42,7 @@ export default async function DashboardPage() {
         <Metric label="Prospects" value={total} />
         <Metric label="Contactés" value={contactes} />
         <Metric label="Taux de réponse" value={`${tauxReponse}%`} />
-        <Metric label="Taux RDV/close" value={`${tauxRdv}%`} />
+        <Metric label="RDV / devis / close" value={`${tauxRdv}%`} />
       </div>
       <p className="text-xs text-[#8A8F98] -mt-3">
         En prospection à froid, un taux de réponse entre 10 et 20 % reste normal, même avec un

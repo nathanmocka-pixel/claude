@@ -2,8 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { SECTEURS, STATUTS, type Membre, type Prospect } from "@/lib/domain";
-import { JoursBadge, PrioriteDot, StatutBadge } from "./_components/badges";
+import { SECTEURS, STATUTS, trierListe, type Membre, type Prospect } from "@/lib/domain";
+import { JoursBadge, PrioriteDot, RdvBadge, StatutBadge } from "./_components/badges";
 import { OwnerBadge } from "./_components/owner-badge";
 
 type SP = Promise<{ statut?: string; secteur?: string; q?: string; qui?: string }>;
@@ -16,11 +16,13 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  let query = supabase
-    .from("prospects")
-    .select("*")
-    .order("date_contact", { ascending: false, nullsFirst: false });
-  if (sp.statut && sp.statut !== "tous") query = query.eq("statut", sp.statut);
+  const filtreStatut = sp.statut && sp.statut !== "tous" ? sp.statut : null;
+
+  let query = supabase.from("prospects").select("*");
+  if (filtreStatut) query = query.eq("statut", filtreStatut);
+  // Les prospects abandonnés encombrent la liste sans rien apporter. Ils
+  // restent accessibles en filtrant explicitement sur le statut Dead.
+  else query = query.neq("statut", "dead");
   if (sp.secteur && sp.secteur !== "tous") query = query.eq("secteur", sp.secteur);
   if (sp.qui === "moi") query = query.eq("owner_id", user.id);
   if (sp.q?.trim()) {
@@ -28,9 +30,18 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
     query = query.or(`nom.ilike.${term},entreprise.ilike.${term}`);
   }
   const { data } = await query;
-  const prospects = (data ?? []) as Prospect[];
+  const prospects = trierListe((data ?? []) as Prospect[]);
 
-  const { data: membresRows } = await supabase.from("profiles").select("id, email");
+  // Les dead sont masqués par défaut : le dire évite de croire qu'ils ont
+  // disparu de la base.
+  const { count: deadCaches } = filtreStatut
+    ? { count: 0 }
+    : await supabase
+        .from("prospects")
+        .select("id", { count: "exact", head: true })
+        .eq("statut", "dead");
+
+  const { data: membresRows } = await supabase.from("profiles").select("id, email, avatar_url");
   const membres = new Map<string, Membre>(
     ((membresRows ?? []) as Membre[]).map((m) => [m.id, m])
   );
@@ -91,6 +102,19 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
         </button>
       </form>
 
+      <div className="text-sm text-[#8A8F98] mb-3">
+        <span className="font-semibold text-[#5A6072]">{prospects.length}</span>{" "}
+        {prospects.length > 1 ? "prospects" : "prospect"}
+        {deadCaches ? (
+          <>
+            {" · "}
+            <Link href="/app?statut=dead" className="underline hover:text-navy">
+              {deadCaches} dead masqué{deadCaches > 1 ? "s" : ""}
+            </Link>
+          </>
+        ) : null}
+      </div>
+
       {prospects.length === 0 ? (
         <div className="text-center py-16 text-[#8A8F98] text-sm">
           Aucun prospect ne correspond.
@@ -116,7 +140,13 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
               <div className="flex items-center gap-2 shrink-0">
                 <OwnerBadge ownerId={p.owner_id} membres={membres} currentUserId={user.id} />
                 <StatutBadge statut={p.statut} />
-                <JoursBadge dateContact={p.date_contact} statut={p.statut} />
+                {/* Sur un RDV, la date du rendez-vous prime : le nombre de
+                    jours depuis le dernier message n'apprend plus rien. */}
+                {p.statut === "rdv" && p.date_rdv ? (
+                  <RdvBadge dateRdv={p.date_rdv} />
+                ) : (
+                  <JoursBadge dateContact={p.date_contact} statut={p.statut} />
+                )}
               </div>
             </Link>
           ))}
