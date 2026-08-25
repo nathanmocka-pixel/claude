@@ -104,6 +104,13 @@ export function ProspectView({
           <div className="font-display font-bold truncate">{local.nom}</div>
           <div className="text-xs text-[#8A8F98] truncate">{local.entreprise}</div>
         </div>
+        {proprietaire && (
+          <Avatar
+            membre={proprietaire}
+            taille="md"
+            titre={suiviParAutre ? `Suivi par ${nomCourt(proprietaire.email)}` : "Vous"}
+          />
+        )}
         <button onClick={onDelete} className="text-[#B4B7BD] hover:text-[#B0392B]">
           <Trash2 size={16} />
         </button>

@@ -23,7 +23,8 @@ export function HistoriqueItem({
   const [erreur, setErreur] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const autre = message.owner_id !== currentUserId ? membreParId.get(message.owner_id) : undefined;
+  const auteur = membreParId.get(message.owner_id);
+  const parUnAutre = message.owner_id !== currentUserId;
 
   function enregistrer() {
     if (!texte.trim()) {
@@ -62,10 +63,16 @@ export function HistoriqueItem({
     <div className="bg-white border border-border rounded-lg p-3">
       <div className="flex items-start justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 text-[11px] text-[#8A8F98] font-semibold">
-          {autre && <Avatar membre={autre} taille="sm" />}
+          {auteur && (
+            <Avatar
+              membre={auteur}
+              taille="sm"
+              titre={parUnAutre ? nomCourt(auteur.email) : "Vous"}
+            />
+          )}
           <span>
             {message.date} · {message.canal}
-            {autre ? ` · ${nomCourt(autre.email)}` : ""}
+            {parUnAutre && auteur ? ` · ${nomCourt(auteur.email)}` : ""}
           </span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
