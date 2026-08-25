@@ -1,5 +1,12 @@
 import { CalendarCheck, Clock } from "lucide-react";
-import { joursAvant, joursDepuis, SEUIL_RELANCE, statutMeta, prioriteMeta } from "@/lib/domain";
+import {
+  joursAvant,
+  joursDepuis,
+  prioriteMeta,
+  SEUIL_RELANCE,
+  STATUTS_A_RELANCER,
+  statutMeta,
+} from "@/lib/domain";
 import type { Priorite, Statut } from "@/lib/domain";
 
 function dateCourte(iso: string) {
@@ -64,7 +71,8 @@ export function JoursBadge({
 }) {
   const j = joursDepuis(dateContact);
   if (j === null) return <span className="text-[#B4B7BD] text-xs">—</span>;
-  const urgent = statut === "nrp" || (statut === "contacte" && j >= SEUIL_RELANCE);
+  const urgent =
+    STATUTS_A_RELANCER.includes(statut) || (statut === "contacte" && j >= SEUIL_RELANCE);
   return (
     <span
       className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${

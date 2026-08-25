@@ -8,7 +8,7 @@ Stack : Next.js 15 (App Router, Server Components + Server Actions), Supabase (A
 
 - **Liste des prospects** avec filtres statut / secteur / recherche libre. Les RDV datés remontent en tête, du plus proche au plus lointain ; les prospects *dead* sont masqués sauf si on filtre explicitement sur ce statut
 - **Fiche prospect** éditable en direct (statut, priorité, pain point, note…) avec compteur de jours depuis le dernier contact et badge rouge dès 5 jours pour les prospects en statut *contacté*
-- **Vue « à relancer »** qui affiche uniquement les prospects contactés depuis 5 jours ou plus
+- **Vue « à relancer »** : les prospects contactés depuis 5 jours ou plus, plus tous ceux en statut *NRP* ou *à recontacter*
 - **Tableau de bord** : total, contactés, taux RDV/close, répartition par statut et par secteur
 - **Prompts Claude prêts à copier** — sur la fiche prospect, deux boutons mettent dans le presse-papier le prompt complet (contexte de marque + règles de ton + angle du secteur + fiche du prospect) pour un **message initial** ou pour une **relance** qui tient compte des messages déjà envoyés. Vous le collez dans votre Claude.ai, vous copiez la réponse dans le CRM. Aucune clé d'API à gérer, aucun coût
 - **Studio contenu** (`/app/contenu`) — même mécanique pour les **posts LinkedIn**, les **commentaires d'engagement** (tutoiement, une à deux phrases, jamais de pitch) et les **carrousels** (structure erreur / bon réflexe + identité visuelle)
@@ -52,6 +52,7 @@ supabase/
   migrations/0005_mcp_oauth.sql         serveur d'autorisation OAuth du connecteur MCP
   migrations/0006_avatars.sql           photo de profil des membres
   migrations/0007_date_rdv.sql          date du rendez-vous pris
+  migrations/0008_statuts_recontacter_devis.sql  statuts à recontacter et devis envoyé
 ```
 
 ## Setup
@@ -59,7 +60,7 @@ supabase/
 ### 1. Créer le projet Supabase
 
 - https://supabase.com → New project, région Europe recommandée
-- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, `0002_prompts_signaux.sql`, `0003_fix_profiles_rls_recursion.sql`, `0004_equipe_partagee.sql`, `0005_mcp_oauth.sql`, `0006_avatars.sql`, `0007_date_rdv.sql`
+- Une fois créé, ouvrir **SQL Editor** et jouer les migrations de `supabase/migrations/` **dans l'ordre**, une requête séparée par fichier : `0001_init.sql`, `0002_prompts_signaux.sql`, `0003_fix_profiles_rls_recursion.sql`, `0004_equipe_partagee.sql`, `0005_mcp_oauth.sql`, `0006_avatars.sql`, `0007_date_rdv.sql`, `0008_statuts_recontacter_devis.sql`
 - Récupérer dans **Project Settings → API** :
   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
   - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`

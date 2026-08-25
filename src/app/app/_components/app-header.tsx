@@ -10,14 +10,16 @@ export function AppHeader({
   membre,
   role,
   aRelancerCount,
+  prospectsCount,
 }: {
   membre: Membre;
   role: Role;
   aRelancerCount: number;
+  prospectsCount: number;
 }) {
   const pathname = usePathname();
   const tabs = [
-    { href: "/app", label: "Prospects" },
+    { href: "/app", label: `Prospects${prospectsCount ? ` (${prospectsCount})` : ""}` },
     {
       href: "/app/relance",
       label: `À relancer${aRelancerCount ? ` (${aRelancerCount})` : ""}`,

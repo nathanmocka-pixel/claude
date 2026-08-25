@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { SEUIL_RELANCE, type Prospect } from "@/lib/domain";
+import { SEUIL_RELANCE, STATUTS_A_RELANCER, type Prospect } from "@/lib/domain";
 import { JoursBadge } from "../_components/badges";
 
 export default async function RelancePage() {
@@ -8,11 +8,11 @@ export default async function RelancePage() {
   const { data } = await supabase
     .from("prospects")
     .select("*")
-    .in("statut", ["contacte", "nrp"])
+    .in("statut", ["contacte", ...STATUTS_A_RELANCER])
     .order("date_contact", { ascending: true, nullsFirst: false });
   const seuilMs = Date.now() - SEUIL_RELANCE * 86400000;
   const prospects = ((data ?? []) as Prospect[]).filter((p) => {
-    if (p.statut === "nrp") return true;
+    if (STATUTS_A_RELANCER.includes(p.statut)) return true;
     if (!p.date_contact) return false;
     return new Date(p.date_contact).getTime() <= seuilMs;
   });
@@ -32,7 +32,7 @@ export default async function RelancePage() {
     <div className="space-y-2">
       <p className="text-sm text-[#8A8F98] mb-3">
         Prospects contactés il y a {SEUIL_RELANCE} jours ou plus sans nouvelle relance, et tous
-        les prospects en statut NRP.
+        les prospects en statut NRP ou à recontacter.
       </p>
       {prospects.map((p) => (
         <Link

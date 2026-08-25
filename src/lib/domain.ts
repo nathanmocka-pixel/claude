@@ -1,17 +1,48 @@
-export type Statut = "a_qualifier" | "contacte" | "rdv" | "nrp" | "close" | "dead";
+export type Statut =
+  | "a_qualifier"
+  | "contacte"
+  | "a_recontacter"
+  | "rdv"
+  | "devis_envoye"
+  | "nrp"
+  | "close"
+  | "dead";
 export type Priorite = "chaud" | "tiede" | "froid";
 export type Role = "admin" | "member";
 
 export const SEUIL_RELANCE = 5;
 
+// L'ordre suit le pipeline, de la qualification à la signature, les issues
+// négatives en fin de liste.
 export const STATUTS: { id: Statut; label: string; color: string }[] = [
   { id: "a_qualifier", label: "À qualifier", color: "#8A8F98" },
   { id: "contacte", label: "Contacté", color: "#16213E" },
+  { id: "a_recontacter", label: "À recontacter", color: "#C4703B" },
   { id: "rdv", label: "RDV pris", color: "#1E7A4C" },
+  { id: "devis_envoye", label: "Devis envoyé", color: "#2F6FA8" },
   { id: "nrp", label: "NRP", color: "#B8862E" },
   { id: "close", label: "Close", color: "#1E7A4C" },
   { id: "dead", label: "Dead", color: "#B0392B" },
 ];
+
+// Statuts qui appellent une action de relance quelle que soit la date : le
+// prospect a explicitement été mis de côté pour être repris.
+export const STATUTS_A_RELANCER: Statut[] = ["nrp", "a_recontacter"];
+
+// Statuts qui signifient qu'un premier contact a eu lieu, pour le dénominateur
+// des taux du tableau de bord.
+export const STATUTS_CONTACTES: Statut[] = [
+  "contacte",
+  "a_recontacter",
+  "rdv",
+  "devis_envoye",
+  "nrp",
+  "close",
+  "dead",
+];
+
+// Statuts qui marquent une avancée réelle dans le pipeline.
+export const STATUTS_AVANCES: Statut[] = ["rdv", "devis_envoye", "close"];
 
 export const SECTEURS = ["Conseil patrimonial", "Comptable", "Juridique", "Autre PME"] as const;
 

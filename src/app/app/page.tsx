@@ -32,6 +32,15 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
   const { data } = await query;
   const prospects = trierListe((data ?? []) as Prospect[]);
 
+  // Les dead sont masqués par défaut : le dire évite de croire qu'ils ont
+  // disparu de la base.
+  const { count: deadCaches } = filtreStatut
+    ? { count: 0 }
+    : await supabase
+        .from("prospects")
+        .select("id", { count: "exact", head: true })
+        .eq("statut", "dead");
+
   const { data: membresRows } = await supabase.from("profiles").select("id, email, avatar_url");
   const membres = new Map<string, Membre>(
     ((membresRows ?? []) as Membre[]).map((m) => [m.id, m])
@@ -92,6 +101,19 @@ export default async function ProspectsPage({ searchParams }: { searchParams: SP
           Filtrer
         </button>
       </form>
+
+      <div className="text-sm text-[#8A8F98] mb-3">
+        <span className="font-semibold text-[#5A6072]">{prospects.length}</span>{" "}
+        {prospects.length > 1 ? "prospects" : "prospect"}
+        {deadCaches ? (
+          <>
+            {" · "}
+            <Link href="/app?statut=dead" className="underline hover:text-navy">
+              {deadCaches} dead masqué{deadCaches > 1 ? "s" : ""}
+            </Link>
+          </>
+        ) : null}
+      </div>
 
       {prospects.length === 0 ? (
         <div className="text-center py-16 text-[#8A8F98] text-sm">
