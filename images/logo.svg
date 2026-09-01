@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background shield -->
+  <path d="M100 10 L180 45 L180 115 Q180 168 100 195 Q20 168 20 115 L20 45 Z"
+        fill="#0D0D0D" stroke="#E10600" stroke-width="3"/>
+  <!-- Red accent bar -->
+  <rect x="20" y="120" width="160" height="8" fill="#E10600" opacity="0.7"/>
+  <!-- F letter -->
+  <text x="42" y="105" font-family="'Arial Black',Impact,sans-serif"
+        font-size="72" font-weight="900" fill="#FFFFFF" letter-spacing="-4">F</text>
+  <!-- 1 number -->
+  <text x="95" y="105" font-family="'Arial Black',Impact,sans-serif"
+        font-size="72" font-weight="900" fill="#E10600" letter-spacing="-4">1</text>
+  <!-- Bottom text -->
+  <text x="100" y="155" font-family="'Arial Black',Impact,sans-serif"
+        font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle"
+        letter-spacing="3">VÉHICULE</text>
+  <!-- Speed lines -->
+  <line x1="28" y1="60" x2="55" y2="60" stroke="#E10600" stroke-width="2" opacity="0.6"/>
+  <line x1="28" y1="67" x2="50" y2="67" stroke="#E10600" stroke-width="1.5" opacity="0.4"/>
+  <line x1="145" y1="60" x2="172" y2="60" stroke="#E10600" stroke-width="2" opacity="0.6"/>
+  <line x1="150" y1="67" x2="172" y2="67" stroke="#E10600" stroke-width="1.5" opacity="0.4"/>
+</svg>

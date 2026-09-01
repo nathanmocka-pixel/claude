@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RDV &amp; Devis – F1 Véhicule Culoz</title>
+  <meta name="description" content="Prenez rendez-vous ou demandez un devis gratuit chez F1 Véhicule à Culoz. Réponse sous 24h."/>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="images/logo.svg" alt="F1 Véhicule logo"/>
+    <span class="brand">F1 <span>Véhicule</span></span>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="presentation.html">À propos</a></li>
+    <li><a href="sav.html">SAV</a></li>
+    <li><a href="rdv.html">RDV &amp; Devis</a></li>
+    <li><a href="contact.html">Nous trouver</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Accueil</a><span>/</span><span>RDV &amp; Devis</span>
+    </div>
+    <h1>Rendez-vous <span>&amp; Devis</span></h1>
+    <p>Remplissez le formulaire — nous vous recontactons sous 24&nbsp;h pour confirmer</p>
+  </div>
+</div>
+
+<!-- ===== RDV SECTION ===== -->
+<section class="rdv-section">
+  <div class="container">
+    <div class="rdv-grid">
+
+      <!-- Informations pratiques -->
+      <div class="rdv-info">
+        <h3>📍 Informations pratiques</h3>
+        <p>Venez directement à l'atelier ou utilisez le formulaire ci-contre. Pour les urgences, appelez-nous directement.</p>
+
+        <div class="rdv-contact-item">
+          <span class="icon">📍</span>
+          <div>
+            <strong>Adresse</strong>
+            110 rue du Boulodrome<br/>01350 Culoz
+          </div>
+        </div>
+        <div class="rdv-contact-item">
+          <span class="icon">📞</span>
+          <div>
+            <strong>Téléphone</strong>
+            04 XX XX XX XX
+          </div>
+        </div>
+        <div class="rdv-contact-item">
+          <span class="icon">✉️</span>
+          <div>
+            <strong>Email</strong>
+            contact@f1vehicule.fr
+          </div>
+        </div>
+
+        <!-- Horaires -->
+        <div class="horaires">
+          <h4>🕐 Horaires d'ouverture</h4>
+          <div class="horaire-row"><span>Lundi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Mardi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Mercredi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Jeudi</span><span>08h00 – 12h00 / 13h30 – 18h30</span></div>
+          <div class="horaire-row"><span>Vendredi</span><span>08h00 – 12h00 / 13h30 – 18h00</span></div>
+          <div class="horaire-row"><span>Samedi</span><span>08h30 – 12h00</span></div>
+          <div class="horaire-row closed"><span>Dimanche</span><span>Fermé</span></div>
+        </div>
+
+        <!-- Rappel garantie -->
+        <div style="margin-top:2rem;background:var(--mid-grey);border-radius:8px;padding:1.2rem 1.4rem;border-left:3px solid var(--red);">
+          <p style="color:#bbb;font-size:.9rem;margin:0;">
+            <strong style="color:var(--white);">Devis gratuit &amp; sans engagement</strong><br/>
+            Aucune intervention sans votre accord préalable. Tarification claire et transparente.
+          </p>
+        </div>
+      </div>
+
+      <!-- Formulaire -->
+      <div class="rdv-form">
+        <h3>📋 Demande de RDV / Devis</h3>
+        <form id="rdv-form" novalidate>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nom">Nom *</label>
+              <input type="text" id="nom" name="nom" placeholder="Dupont" required/>
+            </div>
+            <div class="form-group">
+              <label for="prenom">Prénom *</label>
+              <input type="text" id="prenom" name="prenom" placeholder="Jean" required/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tel">Téléphone *</label>
+              <input type="tel" id="tel" name="tel" placeholder="06 XX XX XX XX" required/>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="jean.dupont@mail.fr"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="marque">Marque du véhicule *</label>
+              <input type="text" id="marque" name="marque" placeholder="Renault, Peugeot…" required/>
+            </div>
+            <div class="form-group">
+              <label for="modele">Modèle</label>
+              <input type="text" id="modele" name="modele" placeholder="Clio, 308…"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="annee">Année</label>
+              <input type="number" id="annee" name="annee" placeholder="2018" min="1970" max="2025"/>
+            </div>
+            <div class="form-group">
+              <label for="km">Kilométrage</label>
+              <input type="text" id="km" name="km" placeholder="85 000 km"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="type">Type de demande *</label>
+            <select id="type" name="type" required>
+              <option value="">— Choisissez —</option>
+              <option>Entretien / Révision</option>
+              <option>Diagnostic / Panne</option>
+              <option>Freinage</option>
+              <option>Pneumatiques</option>
+              <option>Climatisation</option>
+              <option>Électronique</option>
+              <option>Contrôle technique</option>
+              <option>SAV / Garantie</option>
+              <option>Autre</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="date">Date souhaitée</label>
+            <input type="date" id="date" name="date"/>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Décrivez votre demande</label>
+            <textarea id="message" name="message" placeholder="Symptômes observés, témoins allumés, bruit anormal… Toute information utile pour préparer l'intervention."></textarea>
+          </div>
+
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary">Envoyer ma demande →</button>
+          </div>
+          <div class="form-success" id="form-success">
+            ✅ Votre demande a bien été envoyée ! Nous vous recontacterons dans les 24 heures ouvrées. Merci de votre confiance.
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== AVANTAGES ===== -->
+<div style="background:var(--dark-grey);padding:60px 2rem;">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;text-align:center;">
+      <div>
+        <div style="font-size:2rem;margin-bottom:.5rem;">⚡</div>
+        <strong>Réponse &lt; 24h</strong>
+        <p style="color:#aaa;font-size:.85rem;margin-top:.3rem;">Confirmation rapide de votre rendez-vous</p>
+      </div>
+      <div>
+        <div style="font-size:2rem;margin-bottom:.5rem;">💶</div>
+        <strong>Devis gratuit</strong>
+        <p style="color:#aaa;font-size:.85rem;margin-top:.3rem;">Sans engagement, sans surprise</p>
+      </div>
+      <div>
+        <div style="font-size:2rem;margin-bottom:.5rem;">🚗</div>
+        <strong>Véhicule de prêt</strong>
+        <p style="color:#aaa;font-size:.85rem;margin-top:.3rem;">Sur demande, sous réserve de disponibilité</p>
+      </div>
+      <div>
+        <div style="font-size:2rem;margin-bottom:.5rem;">🛡️</div>
+        <strong>Garanti 6 mois</strong>
+        <p style="color:#aaa;font-size:.85rem;margin-top:.3rem;">Main d'œuvre &amp; pièces incluses</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo.svg" alt="logo"/>
+        <span class="brand">F1 <span>Véhicule</span></span>
+      </a>
+      <p>Votre garage de confiance à Culoz, alliant passion automobile et expertise technique depuis 15 ans.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="presentation.html">À propos</a></li>
+        <li><a href="sav.html">SAV</a></li>
+        <li><a href="rdv.html">RDV &amp; Devis</a></li>
+        <li><a href="contact.html">Nous trouver</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <address>
+        110 rue du Boulodrome<br/>
+        01350 Culoz<br/><br/>
+        📞 04 XX XX XX XX<br/>
+        ✉ contact@f1vehicule.fr
+      </address>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 F1 Véhicule — Tous droits réservés</span>
+    <span>110 rue du Boulodrome, 01350 Culoz</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
